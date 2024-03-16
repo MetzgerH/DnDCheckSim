@@ -139,4 +139,8 @@
         private Skill? skill = skill;
         private Tool? tool = tool;
     }
+
+    internal class Save(Ability? ability = null) : D20Test(ability)
+    {
+    }
 }
