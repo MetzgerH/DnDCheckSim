@@ -1,4 +1,6 @@
-﻿namespace CheckSimEngine
+﻿using System;
+
+namespace CheckSimEngine
 {
     /// <summary>
     /// Enumerates the different playable classes in 5e.
@@ -17,6 +19,7 @@
         Sorcerer,
         Warlock,
         Wizard,
+        Max,
     }
 
     /// <summary>
@@ -34,6 +37,7 @@
         Human,
         Orc,
         Tiefling,
+        Max,
     }
 
     /// <summary>
@@ -50,6 +54,7 @@
         private List<Tool> toolExpertises;
         private List<Ability> saveProficiencies;
         private List<Action<D20Test>> bonuses;
+        private Dictionary<Ability, int> abilityScores;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlayerCharacter"/> class.
@@ -71,11 +76,17 @@
             this.toolExpertises = new List<Tool>();
             this.saveProficiencies = new List<Ability>();
             this.bonuses = new List<Action<D20Test>>();
+            this.abilityScores = new Dictionary<Ability, int>();
 
-            this.ApplyLineage(lineage);
+            for (int i = 0; i < level; i++)
+            {
+                this.abilityScores[(Ability)i] = 0;
+            }
 
             this.level = level;
             this.ApplyClass(this.playerClass);
+
+            this.ApplyLineage(lineage);
         }
 
         /// <summary>
@@ -90,7 +101,8 @@
             if (lineage == null)
             {
                 // Set lineageToApply to a random lineage
-                throw new NotImplementedException();
+                Random randy = new Random();
+                lineageToApply = (Lineage)randy.Next((int)Lineage.Max);
             }
             else
             {
@@ -113,15 +125,109 @@
             if (playerClass == null)
             {
                 // Set classToApply to a random lineage
-                throw new NotImplementedException();
+                Random randy = new Random();
+
+                classToApply = (PlayerClass)randy.Next((int)PlayerClass.Max);
             }
             else
             {
                 classToApply = (PlayerClass)playerClass;
             }
 
+            this.playerClass = classToApply;
+
             // Grant proficiencies, expertises, and bonuses relevant to class.
-            throw new NotImplementedException();
+            switch (classToApply)
+            {
+                case PlayerClass.Barbarian:
+                    this.AllocateStandardArray(Ability.Strength);
+                    break;
+                case PlayerClass.Bard:
+                    this.AllocateStandardArray(Ability.Charisma);
+                    break;
+                case PlayerClass.Cleric:
+                    this.AllocateStandardArray(Ability.Wisdom);
+                    break;
+                case PlayerClass.Druid:
+                    this.AllocateStandardArray(Ability.Wisdom);
+                    break;
+                case PlayerClass.Fighter:
+                    this.AllocateStandardArray(Ability.Strength, Ability.Dexterity);
+                    break;
+                case PlayerClass.Monk:
+                    this.AllocateStandardArray(Ability.Dexterity, Ability.Wisdom);
+                    break;
+                case PlayerClass.Paladin:
+                    this.AllocateStandardArray(Ability.Charisma, Ability.Strength);
+                    break;
+                case PlayerClass.Ranger:
+                    this.AllocateStandardArray(Ability.Dexterity, Ability.Wisdom);
+                    break;
+                case PlayerClass.Rogue:
+                    this.AllocateStandardArray(Ability.Dexterity);
+                    break;
+                case PlayerClass.Sorcerer:
+                    this.AllocateStandardArray(Ability.Charisma);
+                    break;
+                case PlayerClass.Warlock:
+                    this.AllocateStandardArray(Ability.Charisma);
+                    break;
+                case PlayerClass.Wizard:
+                    this.AllocateStandardArray(Ability.Intelligence);
+                    break;
+            }
+
+            throw new NotImplementedException("Only ability scores have been implemented. Still missing features, and starting proficiencies");
+        }
+
+        private void AllocateStandardArray(Ability? primary = null, Ability? alsoPrimary = null)
+        {
+            List<int> scorePool = new List<int> { 8, 10, 12, 13, 14, 15 };
+            Random randy = new Random();
+
+            if (primary != null)
+            {
+                if (alsoPrimary == null)
+                {
+                    int prev = 0;
+                    this.abilityScores.TryGetValue((Ability)primary, out prev);
+                    this.abilityScores[(Ability)primary] = 15 + prev;
+                    scorePool.Remove(15);
+                }
+                else
+                {
+                    if (randy.Next(2) == 1)
+                    {
+                        int prev = 0;
+                        this.abilityScores.TryGetValue((Ability)primary, out prev);
+                        this.abilityScores[(Ability)primary] = 15 + prev;
+                        scorePool.Remove(15);
+                        this.abilityScores.TryGetValue((Ability)alsoPrimary, out prev);
+                        this.abilityScores[(Ability)alsoPrimary] = 14 + prev;
+                        scorePool.Remove(14);
+                    }
+                    else
+                    {
+                        int prev = 0;
+                        this.abilityScores.TryGetValue((Ability)alsoPrimary, out prev);
+                        this.abilityScores[(Ability)alsoPrimary] = 15 + prev;
+                        scorePool.Remove(15);
+                        this.abilityScores.TryGetValue((Ability)primary, out prev);
+                        this.abilityScores[(Ability)primary] = 14 + prev;
+                        scorePool.Remove(14);
+                    }
+                }
+            }
+
+            foreach (Ability ability in this.abilityScores.Keys)
+            {
+                if (ability != primary && ability != alsoPrimary)
+                {
+                    int scoreIndex = randy.Next(scorePool.Count);
+                    this.abilityScores[ability] = scorePool[scoreIndex];
+                    scorePool.RemoveAt(scoreIndex);
+                }
+            }
         }
     }
 }
