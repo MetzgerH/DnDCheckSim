@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Cryptography;
 
 namespace CheckSimEngine
 {
@@ -98,10 +99,11 @@ namespace CheckSimEngine
         private void ApplyLineage(Lineage? lineage)
         {
             Lineage lineageToApply;
+            Random randy = new Random();
+
             if (lineage == null)
             {
                 // Set lineageToApply to a random lineage
-                Random randy = new Random();
                 lineageToApply = (Lineage)randy.Next((int)Lineage.Max);
             }
             else
@@ -110,6 +112,63 @@ namespace CheckSimEngine
             }
 
             // Grant proficiences and bonuses relevant to lineage.
+            int prev = 0;
+            switch (lineageToApply)
+            {
+                case Lineage.Dragonborn:
+                    // Dragonborn doesn't get any proficiencies or relevant features.
+                    break;
+                case Lineage.Dwarf:
+                    // Assign random tool proficiency from short list.
+                    List<Tool> toolList = new List<Tool>() { Tool.Smiths, Tool.Brewers, Tool.Masons };
+                    this.AddProficiencyOutOf(toolList);
+
+                    // Increase Constitution score by 2.
+                    this.abilityScores.TryGetValue(Ability.Constitution, out prev);
+                    this.abilityScores[Ability.Constitution] = prev + 2;
+
+                    // Randomly choose subrace.
+                    switch (randy.Next(2))
+                    {
+                        // Hill Dwarf
+                        case 0:
+                            // Increase Wisdom score by 1.
+                            this.abilityScores.TryGetValue(Ability.Wisdom, out prev);
+                            this.abilityScores[Ability.Wisdom] = prev + 1;
+                            break;
+                        case 1:
+                            // Increase Strength score by 2.
+                            this.abilityScores.TryGetValue(Ability.Strength, out prev);
+                            this.abilityScores[Ability.Strength] = prev + 2;
+                            break;
+                    }
+
+                    break;
+                case Lineage.Elf:
+                    throw new NotImplementedException("Elf Lineage Not Implemented Yet");
+                    break;
+                case Lineage.Gnome:
+                    throw new NotImplementedException("Gnome Lineage Not Implemented Yet");
+                    break;
+                case Lineage.HalfElf:
+                    throw new NotImplementedException("HalfELf Lineage Not Implemented Yet");
+                    break;
+                case Lineage.Halfling:
+                    throw new NotImplementedException("Halfling Lineage Not Implemented Yet");
+                    break;
+                case Lineage.HalfOrc:
+                    throw new NotImplementedException("HalfOrc Lineage Not Implemented Yet");
+                    break;
+                case Lineage.Human:
+                    throw new NotImplementedException("Human Lineage Not Implemented Yet");
+                    break;
+                case Lineage.Orc:
+                    throw new NotImplementedException("Orc Lineage Not Implemented Yet");
+                    break;
+                case Lineage.Tiefling:
+                    throw new NotImplementedException("Tiefling Lineage Not Implemented Yet");
+                    break;
+            }
             throw new NotImplementedException();
         }
 
@@ -228,6 +287,21 @@ namespace CheckSimEngine
                     scorePool.RemoveAt(scoreIndex);
                 }
             }
+        }
+
+        private void AddProficiencyOutOf(List<Tool> toolList)
+        {
+            List<Tool> tools = new List<Tool>(toolList);
+            foreach (Tool tool in tools)
+            {
+                if (this.toolProficiencies.Contains(tool))
+                {
+                    tools.Remove(tool);
+                }
+            }
+
+            Random randy = new Random();
+            this.toolProficiencies.Add(tools[randy.Next(tools.Count)]);
         }
     }
 }
