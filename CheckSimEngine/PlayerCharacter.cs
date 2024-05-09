@@ -1,7 +1,4 @@
-﻿using System;
-using System.Security.Cryptography;
-
-namespace CheckSimEngine
+﻿namespace CheckSimEngine
 {
     /// <summary>
     /// Enumerates the different playable classes in 5e.
@@ -56,6 +53,7 @@ namespace CheckSimEngine
         private List<Ability> saveProficiencies;
         private List<Action<D20Test>> bonuses;
         private Dictionary<Ability, int> abilityScores;
+        private bool useRacialASI = true;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlayerCharacter"/> class.
@@ -116,42 +114,104 @@ namespace CheckSimEngine
             switch (lineageToApply)
             {
                 case Lineage.Dragonborn:
-                    // Dragonborn doesn't get any proficiencies or relevant features.
+                    if (this.useRacialASI)
+                    {
+                        this.IncreaseAbilityScore(Ability.Strength, 2);
+
+                        this.IncreaseAbilityScore(Ability.Charisma, 1);
+                    }
+
                     break;
                 case Lineage.Dwarf:
                     // Assign random tool proficiency from short list.
                     List<Tool> toolList = new List<Tool>() { Tool.Smiths, Tool.Brewers, Tool.Masons };
                     this.AddProficiencyOutOf(toolList);
 
-                    // Increase Constitution score by 2.
-                    this.abilityScores.TryGetValue(Ability.Constitution, out prev);
-                    this.abilityScores[Ability.Constitution] = prev + 2;
-
-                    // Randomly choose subrace.
-                    switch (randy.Next(2))
+                    if (this.useRacialASI)
                     {
-                        // Hill Dwarf
-                        case 0:
-                            // Increase Wisdom score by 1.
-                            this.abilityScores.TryGetValue(Ability.Wisdom, out prev);
-                            this.abilityScores[Ability.Wisdom] = prev + 1;
-                            break;
-                        case 1:
-                            // Increase Strength score by 2.
-                            this.abilityScores.TryGetValue(Ability.Strength, out prev);
-                            this.abilityScores[Ability.Strength] = prev + 2;
-                            break;
+                        this.IncreaseAbilityScore(Ability.Constitution, 2);
+
+                        // Randomly choose subrace.
+                        switch (randy.Next(2))
+                        {
+                            // Hill Dwarf
+                            case 0:
+                                this.IncreaseAbilityScore(Ability.Wisdom, 1);
+                                break;
+
+                            // Mountain Dwarf
+                            case 1:
+                                this.IncreaseAbilityScore(Ability.Strength, 2);
+                                break;
+                        }
                     }
 
                     break;
                 case Lineage.Elf:
-                    throw new NotImplementedException("Elf Lineage Not Implemented Yet");
+                    // "Keen Senses": Perception proficiency
+                    if (!this.skillProficiencies.Contains(Skill.Perception))
+                    {
+                        this.skillProficiencies.Add(Skill.Perception);
+                    }
+
+                    if (this.useRacialASI)
+                    {
+                        this.IncreaseAbilityScore(Ability.Dexterity, 2);
+
+                        // Randomly choose subrace.
+                        switch (randy.Next(3))
+                        {
+                            // Eladrin
+                            case 0:
+                                this.IncreaseAbilityScore(Ability.Intelligence, 1);
+                                break;
+
+                            // High Elf
+                            case 1:
+                                this.IncreaseAbilityScore(Ability.Intelligence, 1);
+                                break;
+
+                            // Wood Elf
+                            case 2:
+                                this.IncreaseAbilityScore(Ability.Wisdom, 1);
+                                break;
+                        }
+                    }
+
                     break;
                 case Lineage.Gnome:
-                    throw new NotImplementedException("Gnome Lineage Not Implemented Yet");
+                    if (this.useRacialASI)
+                    {
+                        this.IncreaseAbilityScore(Ability.Intelligence, 2);
+
+                        // Randomly choose subrace
+                        switch (randy.Next(2))
+                        {
+                            // Deep Gnome
+                            case 0:
+                                this.IncreaseAbilityScore(Ability.Dexterity, 1);
+                                break;
+
+                            // Rock Gnome
+                            case 1:
+                                this.IncreaseAbilityScore(Ability.Constitution, 1);
+                                break;
+                        }
+                    }
+
                     break;
                 case Lineage.HalfElf:
-                    throw new NotImplementedException("HalfELf Lineage Not Implemented Yet");
+                    // Two random skills
+                    // Start by constructing list of all skills
+                    List<Skill> list = new List<Skill>();
+                    for (int i = 0; i < (int)Skill.Max; i++)
+                    {
+                        list.Add((Skill)i);
+                    }
+
+                    // Now choose two
+                    this.AddProficiencyOutOf(list);
+                    this.AddProficiencyOutOf(list);
                     break;
                 case Lineage.Halfling:
                     throw new NotImplementedException("Halfling Lineage Not Implemented Yet");
@@ -289,6 +349,13 @@ namespace CheckSimEngine
             }
         }
 
+        /// <summary>
+        /// Selects a Tool from a <paramref name="toolList"/> to gain proficiency in.
+        /// Will only select a Tool that this player character is not already proficient in.
+        /// </summary>
+        /// <param name="toolList">
+        /// List of Tools to choose from.
+        /// </param>
         private void AddProficiencyOutOf(List<Tool> toolList)
         {
             List<Tool> tools = new List<Tool>(toolList);
@@ -302,6 +369,35 @@ namespace CheckSimEngine
 
             Random randy = new Random();
             this.toolProficiencies.Add(tools[randy.Next(tools.Count)]);
+        }
+
+        /// <summary>
+        /// Selects a Skill from a <paramref name="skillList"/> to gain proficiency in.
+        /// Will only select a Skill that this player character is not already proficient in.
+        /// </summary>
+        /// <param name="skillList">
+        /// List of Skills to choose from.
+        /// </param>
+        private void AddProficiencyOutOf(List<Skill> skillList)
+        {
+            List<Skill> skills = new List<Skill>(skillList);
+            foreach (Skill skill in skills)
+            {
+                if (this.skillProficiencies.Contains(skill))
+                {
+                    skills.Remove(skill);
+                }
+            }
+
+            Random randy = new Random();
+            this.skillProficiencies.Add(skills[randy.Next(skills.Count)]);
+        }
+
+        private void IncreaseAbilityScore(Ability ability, int amount)
+        {
+            int prev = 0;
+            this.abilityScores.TryGetValue(ability, out prev);
+            this.abilityScores[ability] = prev + amount;
         }
     }
 }
