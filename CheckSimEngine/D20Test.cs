@@ -43,6 +43,7 @@
         SleightOfHand,
         Stealth,
         Survival,
+        Max,
     }
 
     /// <summary>
@@ -118,6 +119,17 @@
             get
             {
                 return this.ability;
+            }
+        }
+
+        /// <summary>
+        /// Gets the odds related to this test.
+        /// </summary>
+        public Dictionary<int,double> Odds
+        {
+            get
+            {
+                return this.odds;
             }
         }
     }

@@ -39,6 +39,17 @@
     }
 
     /// <summary>
+    /// Enumerates the different phases of modifying a D20Test.
+    /// </summary>
+    internal enum ModifierPriority
+    {
+        Rerolls,
+        BeforeAdvantage,
+        Advantage,
+        AfterAdvantage,
+    }
+
+    /// <summary>
     /// Simulates/represents a player's character in 5e.
     /// </summary>
     internal class PlayerCharacter
@@ -53,6 +64,7 @@
         private List<Ability> saveProficiencies;
         private List<Action<D20Test>> bonuses;
         private Dictionary<Ability, int> abilityScores;
+        private PriorityQueue<Action<D20Test>, ModifierPriority> modifiers;
         private bool useRacialASI = true;
 
         /// <summary>
@@ -201,6 +213,20 @@
 
                     break;
                 case Lineage.HalfElf:
+                    if (this.useRacialASI)
+                    {
+                        this.IncreaseAbilityScore(Ability.Charisma, 2);
+
+                        // Randomly choose two other ability scores to increase by 1
+                        List<Ability> abilityList = new List<Ability>()
+                            { Ability.Constitution, Ability.Dexterity, Ability.Intelligence, Ability.Strength, Ability.Wisdom };
+                        Ability abilityToIncrease = abilityList[randy.Next(5)];
+                        this.IncreaseAbilityScore(abilityToIncrease, 1);
+                        abilityList.Remove(abilityToIncrease);
+                        abilityToIncrease = abilityList[randy.Next(4)];
+                        this.IncreaseAbilityScore(abilityToIncrease, 1);
+                    }
+
                     // Two random skills
                     // Start by constructing list of all skills
                     List<Skill> list = new List<Skill>();
@@ -214,7 +240,43 @@
                     this.AddProficiencyOutOf(list);
                     break;
                 case Lineage.Halfling:
-                    throw new NotImplementedException("Halfling Lineage Not Implemented Yet");
+                    // Create the "Lucky" modifier, which rerolls the d20 when it rolls a 1. If a 1 is rolled on the reroll, it does not get rerolled again.
+                    Action<D20Test> lucky = d20 =>
+                    {
+                        Dictionary<int, double> oldOdds = new Dictionary<int, double>(d20.Odds);
+
+                        // Get rid of old odds of rolling 1, because that is rerolled.
+                        d20.Odds[1] = 0;
+
+                        // Redistribute the odds we just got rid of.
+                        foreach (int side in d20.Odds.Keys)
+                        {
+                            d20.Odds[side] += oldOdds[side] * oldOdds[1];
+                        }
+                    };
+
+                    // Add the modifier to this player character.
+                    this.modifiers.Enqueue(lucky, ModifierPriority.Rerolls);
+
+                    if (this.useRacialASI)
+                    {
+                        this.IncreaseAbilityScore(Ability.Dexterity, 2);
+
+                        // Randomly choose subrace
+                        switch (randy.Next(2))
+                        {
+                            // Lightfoot
+                            case 0:
+                                this.IncreaseAbilityScore(Ability.Charisma, 1);
+                                break;
+
+                            // Stout
+                            case 1:
+                                this.IncreaseAbilityScore(Ability.Constitution, 1);
+                                break;
+                        }
+                    }
+
                     break;
                 case Lineage.HalfOrc:
                     throw new NotImplementedException("HalfOrc Lineage Not Implemented Yet");
