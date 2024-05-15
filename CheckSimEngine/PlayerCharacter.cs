@@ -33,7 +33,6 @@
         Halfling,
         HalfOrc,
         Human,
-        Orc,
         Tiefling,
         Max,
     }
@@ -88,6 +87,7 @@
             this.saveProficiencies = new List<Ability>();
             this.bonuses = new List<Action<D20Test>>();
             this.abilityScores = new Dictionary<Ability, int>();
+            this.modifiers = new PriorityQueue<Action<D20Test>, ModifierPriority>();
 
             for (int i = 0; i < level; i++)
             {
@@ -122,7 +122,6 @@
             }
 
             // Grant proficiences and bonuses relevant to lineage.
-            int prev = 0;
             switch (lineageToApply)
             {
                 case Lineage.Dragonborn:
@@ -279,19 +278,34 @@
 
                     break;
                 case Lineage.HalfOrc:
-                    throw new NotImplementedException("HalfOrc Lineage Not Implemented Yet");
+                    if (!this.skillProficiencies.Contains(Skill.Intimidation))
+                    {
+                        this.skillProficiencies.Add(Skill.Intimidation);
+                    }
+
+                    if (this.useRacialASI)
+                    {
+                        this.IncreaseAbilityScore(Ability.Strength, 2);
+                        this.IncreaseAbilityScore(Ability.Constitution, 2);
+                    }
+
                     break;
                 case Lineage.Human:
-                    throw new NotImplementedException("Human Lineage Not Implemented Yet");
-                    break;
-                case Lineage.Orc:
-                    throw new NotImplementedException("Orc Lineage Not Implemented Yet");
+                    for (int i = 0; i < (int) Skill.Max; i++)
+                    {
+                        this.IncreaseAbilityScore((Ability)i, 1);
+                    }
+
                     break;
                 case Lineage.Tiefling:
-                    throw new NotImplementedException("Tiefling Lineage Not Implemented Yet");
+                    if (this.useRacialASI)
+                    {
+                        this.IncreaseAbilityScore(Ability.Charisma, 2);
+                        this.IncreaseAbilityScore(Ability.Intelligence, 2);
+                    }
+
                     break;
             }
-            throw new NotImplementedException();
         }
 
         /// <summary>
