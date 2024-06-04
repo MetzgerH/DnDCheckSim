@@ -309,10 +309,10 @@
         }
 
         /// <summary>
-        /// Applies a lineage to this PlayerCharacter, including all proficiencies, expertises, and bonuses granted by the lineage.
+        /// Applies a class to this PlayerCharacter, including all proficiencies, expertises, and bonuses granted by the class.
         /// </summary>
         /// <param name="playerClass">
-        /// The class to be applied. Can be null, to select a random lineage.
+        /// The class to be applied. Can be null, to select a random class.
         /// </param>
         private void ApplyClass(PlayerClass? playerClass)
         {
@@ -335,44 +335,82 @@
             switch (classToApply)
             {
                 case PlayerClass.Barbarian:
+                    this.AddProficiencyOutOf(new List<Skill> { Skill.AnimalHandling, Skill.Athletics, Skill.Intimidation, Skill.Nature, Skill.Perception, Skill.Survival });
+                    this.AddProficiencyOutOf(new List<Skill> { Skill.AnimalHandling, Skill.Athletics, Skill.Intimidation, Skill.Nature, Skill.Perception, Skill.Survival });
                     this.AllocateStandardArray(Ability.Strength);
                     break;
                 case PlayerClass.Bard:
+                    // Three random skills
+                    // Start by constructing list of all skills
+                    List<Skill> list = new List<Skill>();
+                    for (int i = 0; i < (int)Skill.Max; i++)
+                    {
+                        list.Add((Skill)i);
+                    }
+
+                    // Now choose three
+                    for (int i = 0; i < 3; i++)
+                    {
+                        this.AddProficiencyOutOf(list);
+                    }
+
                     this.AllocateStandardArray(Ability.Charisma);
                     break;
                 case PlayerClass.Cleric:
+                    this.AddProficiencyOutOf(new List<Skill> { Skill.History, Skill.Insight, Skill.Medicine, Skill.Persuasion, Skill.Religion });
+                    this.AddProficiencyOutOf(new List<Skill> { Skill.History, Skill.Insight, Skill.Medicine, Skill.Persuasion, Skill.Religion });
                     this.AllocateStandardArray(Ability.Wisdom);
                     break;
                 case PlayerClass.Druid:
+                    this.AddProficiencyOutOf(new List<Skill> { Skill.Arcana, Skill.AnimalHandling, Skill.Insight, Skill.Medicine, Skill.Nature, Skill.Perception, Skill.Religion, Skill.Survival });
+                    this.AddProficiencyOutOf(new List<Skill> { Skill.Arcana, Skill.AnimalHandling, Skill.Insight, Skill.Medicine, Skill.Nature, Skill.Perception, Skill.Religion, Skill.Survival });
                     this.AllocateStandardArray(Ability.Wisdom);
                     break;
                 case PlayerClass.Fighter:
+                    this.AddProficiencyOutOf(new List<Skill> { Skill.Acrobatics, Skill.AnimalHandling, Skill.Athletics, Skill.History, Skill.Insight, Skill.Intimidation, Skill.Perception });
+                    this.AddProficiencyOutOf(new List<Skill> { Skill.Acrobatics, Skill.AnimalHandling, Skill.Athletics, Skill.History, Skill.Insight, Skill.Intimidation, Skill.Perception });
                     this.AllocateStandardArray(Ability.Strength, Ability.Dexterity);
                     break;
                 case PlayerClass.Monk:
+                    this.AddProficiencyOutOf(new List<Skill> { Skill.Acrobatics, Skill.Athletics, Skill.History, Skill.Insight, Skill.Religion, Skill.Stealth });
+                    this.AddProficiencyOutOf(new List<Skill> { Skill.Acrobatics, Skill.Athletics, Skill.History, Skill.Insight, Skill.Religion, Skill.Stealth });
                     this.AllocateStandardArray(Ability.Dexterity, Ability.Wisdom);
                     break;
                 case PlayerClass.Paladin:
+                    this.AddProficiencyOutOf(new List<Skill> { Skill.Athletics, Skill.Insight, Skill.Intimidation, Skill.Medicine, Skill.Persuasion, Skill.Religion });
+                    this.AddProficiencyOutOf(new List<Skill> { Skill.Athletics, Skill.Insight, Skill.Intimidation, Skill.Medicine, Skill.Persuasion, Skill.Religion });
                     this.AllocateStandardArray(Ability.Charisma, Ability.Strength);
                     break;
                 case PlayerClass.Ranger:
+                    this.AddProficiencyOutOf(new List<Skill> { Skill.AnimalHandling, Skill.Athletics, Skill.Insight, Skill.Investigation, Skill.Nature, Skill.Perception, Skill.Stealth, Skill.Survival });
+                    this.AddProficiencyOutOf(new List<Skill> { Skill.AnimalHandling, Skill.Athletics, Skill.Insight, Skill.Investigation, Skill.Nature, Skill.Perception, Skill.Stealth, Skill.Survival });
+                    this.AddProficiencyOutOf(new List<Skill> { Skill.AnimalHandling, Skill.Athletics, Skill.Insight, Skill.Investigation, Skill.Nature, Skill.Perception, Skill.Stealth, Skill.Survival });
                     this.AllocateStandardArray(Ability.Dexterity, Ability.Wisdom);
                     break;
                 case PlayerClass.Rogue:
+                    this.AddProficiencyOutOf(new List<Skill> { Skill.Acrobatics, Skill.Athletics, Skill.Deception, Skill.Insight, Skill.Intimidation, Skill.Investigation, Skill.Perception, Skill.Performance, Skill.Persuasion, Skill.SleightOfHand, Skill.Stealth });
+                    this.AddProficiencyOutOf(new List<Skill> { Skill.Acrobatics, Skill.Athletics, Skill.Deception, Skill.Insight, Skill.Intimidation, Skill.Investigation, Skill.Perception, Skill.Performance, Skill.Persuasion, Skill.SleightOfHand, Skill.Stealth });
+                    this.AddProficiencyOutOf(new List<Skill> { Skill.Acrobatics, Skill.Athletics, Skill.Deception, Skill.Insight, Skill.Intimidation, Skill.Investigation, Skill.Perception, Skill.Performance, Skill.Persuasion, Skill.SleightOfHand, Skill.Stealth });
                     this.AllocateStandardArray(Ability.Dexterity);
                     break;
                 case PlayerClass.Sorcerer:
+                    this.AddProficiencyOutOf(new List<Skill> { Skill.Arcana, Skill.Deception, Skill.Insight, Skill.Intimidation, Skill.Persuasion, Skill.Religion });
+                    this.AddProficiencyOutOf(new List<Skill> { Skill.Arcana, Skill.Deception, Skill.Insight, Skill.Intimidation, Skill.Persuasion, Skill.Religion });
                     this.AllocateStandardArray(Ability.Charisma);
                     break;
                 case PlayerClass.Warlock:
+                    this.AddProficiencyOutOf(new List<Skill> { Skill.Arcana, Skill.Deception, Skill.History, Skill.Intimidation, Skill.Investigation, Skill.Nature, Skill.Religion });
+                    this.AddProficiencyOutOf(new List<Skill> { Skill.Arcana, Skill.Deception, Skill.History, Skill.Intimidation, Skill.Investigation, Skill.Nature, Skill.Religion });
                     this.AllocateStandardArray(Ability.Charisma);
                     break;
                 case PlayerClass.Wizard:
+                    this.AddProficiencyOutOf(new List<Skill> { Skill.Arcana, Skill.History, Skill.Insight, Skill.Investigation, Skill.Medicine, Skill.Religion });
+                    this.AddProficiencyOutOf(new List<Skill> { Skill.Arcana, Skill.History, Skill.Insight, Skill.Investigation, Skill.Medicine, Skill.Religion });
                     this.AllocateStandardArray(Ability.Intelligence);
                     break;
             }
 
-            throw new NotImplementedException("Only ability scores have been implemented. Still missing features, and starting proficiencies");
+            throw new NotImplementedException("Only ability scores have been implemented. Still missing features");
         }
 
         private void AllocateStandardArray(Ability? primary = null, Ability? alsoPrimary = null)

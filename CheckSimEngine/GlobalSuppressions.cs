@@ -5,8 +5,9 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1602:Enumeration items should be documented", Justification = "<Pending>", Scope = "type", Target = "~T:CheckSimEngine.Ability")]
-[assembly: SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1602:Enumeration items should be documented", Justification = "<Pending>", Scope = "type", Target = "~T:CheckSimEngine.Skill")]
-[assembly: SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1602:Enumeration items should be documented", Justification = "<Pending>", Scope = "type", Target = "~T:CheckSimEngine.Tool")]
-[assembly: SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1602:Enumeration items should be documented", Justification = "<Pending>", Scope = "type", Target = "~T:CheckSimEngine.Lineage")]
-[assembly: SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1602:Enumeration items should be documented", Justification = "<Pending>", Scope = "type", Target = "~T:CheckSimEngine.PlayerClass")]
+[assembly: SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1602:Enumeration items should be documented", Justification = "Further context would not be helpful here.", Scope = "type", Target = "~T:CheckSimEngine.Ability")]
+[assembly: SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1602:Enumeration items should be documented", Justification = "Further context would not be helpful here.", Scope = "type", Target = "~T:CheckSimEngine.Skill")]
+[assembly: SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1602:Enumeration items should be documented", Justification = "Further context would not be helpful here.", Scope = "type", Target = "~T:CheckSimEngine.Tool")]
+[assembly: SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1602:Enumeration items should be documented", Justification = "Further context would not be helpful here.", Scope = "type", Target = "~T:CheckSimEngine.Lineage")]
+[assembly: SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1602:Enumeration items should be documented", Justification = "Further context would not be helpful here.", Scope = "type", Target = "~T:CheckSimEngine.PlayerClass")]
+[assembly: SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1602:Enumeration items should be documented", Justification = "Further context would not be helpful here.", Scope = "type", Target = "~T:CheckSimEngine.ModifierPriority")]

@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34316.72
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckSimGUI", "CheckSimGUI\CheckSimGUI.csproj", "{E4090D71-7575-418B-9821-7251A765054B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckSimGUI", "CheckSimGUI\CheckSimGUI.csproj", "{E4090D71-7575-418B-9821-7251A765054B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckSimEngine", "..\CheckSimEngine\CheckSimEngine.csproj", "{6DE15361-F0B4-410A-8536-FEC061E04DE9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckSimEngine", "..\CheckSimEngine\CheckSimEngine.csproj", "{6DE15361-F0B4-410A-8536-FEC061E04DE9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineTest", "EngineTest\EngineTest.csproj", "{BAEA5E05-6B1B-4DBB-A6F6-393063D85B67}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{6DE15361-F0B4-410A-8536-FEC061E04DE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6DE15361-F0B4-410A-8536-FEC061E04DE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6DE15361-F0B4-410A-8536-FEC061E04DE9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BAEA5E05-6B1B-4DBB-A6F6-393063D85B67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BAEA5E05-6B1B-4DBB-A6F6-393063D85B67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BAEA5E05-6B1B-4DBB-A6F6-393063D85B67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BAEA5E05-6B1B-4DBB-A6F6-393063D85B67}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
