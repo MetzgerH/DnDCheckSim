@@ -90,7 +90,7 @@
     /// </param>
     internal class D20Test
     {
-        private Ability? ability;
+        private Ability? relevantAbility;
         private Dictionary<int, double> odds;
 
 
@@ -102,7 +102,7 @@
         /// </param>
         public D20Test(Ability? ability = null)
         {
-            this.ability = ability;
+            this.relevantAbility = ability;
             this.odds = new Dictionary<int, double>();
 
             for (int i = 1;  i <= 20; i++)
@@ -114,11 +114,11 @@
         /// <summary>
         /// Gets the ability related to this test.
         /// </summary>
-        public Ability? Ability
+        public Ability? RelevantAbility
         {
             get
             {
-                return this.ability;
+                return this.relevantAbility;
             }
         }
 
@@ -130,6 +130,28 @@
             get
             {
                 return this.odds;
+            }
+        }
+
+        /// <summary>
+        /// Adds <paramref name="i"/> to the roll.
+        /// </summary>
+        /// <param name="bonus">
+        /// The bonus to add.
+        /// </param>
+        public void ApplyBonus(int bonus)
+        {
+            List<int> orderedRolls = this.odds.Keys.ToList();
+
+            // If a bonus is positive, we must iterate highest to lowest, to avoid double-boosting.
+            if (bonus > 0)
+            {
+                orderedRolls.Reverse();
+            }
+
+            foreach (int roll in orderedRolls)
+            {
+                this.odds[roll + bonus] = this.odds[roll];
             }
         }
     }
@@ -148,8 +170,18 @@
     /// </param>
     internal class Check(Ability? ability = null, Skill? skill = null, Tool? tool = null) : D20Test(ability)
     {
-        private Skill? skill = skill;
-        private Tool? tool = tool;
+        private Skill? relevantSkill = skill;
+        private Tool? relevantTool = tool;
+
+        /// <summary>
+        /// Gets the skill used in this check, if any.
+        /// </summary>
+        public Skill? RelevantSkill { get { return this.relevantSkill; } }
+
+        /// <summary>
+        /// Gets the tool used in this check, if any.
+        /// </summary>
+        public Tool? RelevantTool { get { return this.relevantTool; } }
     }
 
     internal class Save(Ability? ability = null) : D20Test(ability)
