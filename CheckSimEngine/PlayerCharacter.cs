@@ -349,6 +349,11 @@
                     this.AddProficiencyOutOf(new List<Skill> { Skill.AnimalHandling, Skill.Athletics, Skill.Intimidation, Skill.Nature, Skill.Perception, Skill.Survival });
                     this.AllocateStandardArray(Ability.Strength);
 
+                    for (int i = 4; i < this.level; i += 4)
+                    {
+                        this.AbilityScoreImprovement();
+                    }
+
                     if (this.level >= 18)
                     {
                         Action<D20Test> indomitableMight = d20 =>
@@ -401,6 +406,11 @@
                     }
 
                     this.AllocateStandardArray(Ability.Charisma);
+
+                    for (int i = 4; i < this.level; i += 4)
+                    {
+                        this.AbilityScoreImprovement();
+                    }
 
                     if (this.level >= 2)
                     {
@@ -626,6 +636,23 @@
             int prev = 0;
             this.abilityScores.TryGetValue(ability, out prev);
             this.abilityScores[ability] = Math.Min(prev + amount, this.abilityScoreMaximums[ability]);
+        }
+
+        /// <summary>
+        /// This is a feature that every class gets at certain levels (the levels aren't the same between classes), which increases 2 ability scores by 1, or 1 by 2.
+        /// </summary>
+        private void AbilityScoreImprovement()
+        {
+            Random randy = new Random();
+            if (randy.Next(2) == 0)
+            {
+                this.IncreaseAbilityScore((Ability)randy.Next(6), 1);
+                this.IncreaseAbilityScore((Ability)randy.Next(6), 1);
+            }
+            else
+            {
+                this.IncreaseAbilityScore((Ability)randy.Next(6), 2);
+            }
         }
     }
 }
