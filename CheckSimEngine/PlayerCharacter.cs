@@ -421,10 +421,10 @@
                             if (d20 is Check)
                             {
                                 // Now check that proficiency bonus is not already added based on skill
-                                if (((d20 as Check).RelevantSkill is not null && this.skillProficiencies.Contains((Skill)(d20 as Check).RelevantSkill))
+                                if (((d20 as Check).RelevantSkill is not null && !this.skillProficiencies.Contains((Skill)(d20 as Check).RelevantSkill))
                                     | (d20 as Check).RelevantSkill is null)
                                 {
-                                    if (((d20 as Check).RelevantTool is not null && this.toolProficiencies.Contains((Tool)(d20 as Check).RelevantTool))
+                                    if (((d20 as Check).RelevantTool is not null && !this.toolProficiencies.Contains((Tool)(d20 as Check).RelevantTool))
                                     | (d20 as Check).RelevantTool is null)
                                     {
                                         d20.ApplyBonus(this.ProficiencyBonus / 2);
