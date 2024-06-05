@@ -349,7 +349,7 @@
                     this.AddProficiencyOutOf(new List<Skill> { Skill.AnimalHandling, Skill.Athletics, Skill.Intimidation, Skill.Nature, Skill.Perception, Skill.Survival });
                     this.AllocateStandardArray(Ability.Strength);
 
-                    for (int i = 4; i < this.level; i += 4)
+                    for (int i = 4; i <= this.level && i < 20; i += 4)
                     {
                         this.AbilityScoreImprovement();
                     }
@@ -358,20 +358,23 @@
                     {
                         Action<D20Test> indomitableMight = d20 =>
                         {
-                            foreach (int roll in d20.Odds.Keys)
+                            if (d20.RelevantAbility == Ability.Strength && d20 is Check)
                             {
-                                if (roll < this.abilityScores[Ability.Strength])
+                                foreach (int roll in d20.Odds.Keys)
                                 {
-                                    if (d20.Odds.ContainsKey(this.abilityScores[Ability.Strength]))
+                                    if (roll < this.abilityScores[Ability.Strength])
                                     {
-                                        d20.Odds[this.abilityScores[Ability.Strength]] += d20.Odds[roll];
-                                    }
-                                    else
-                                    {
-                                        d20.Odds[this.abilityScores[Ability.Strength]] = d20.Odds[roll];
-                                    }
+                                        if (d20.Odds.ContainsKey(this.abilityScores[Ability.Strength]))
+                                        {
+                                            d20.Odds[this.abilityScores[Ability.Strength]] += d20.Odds[roll];
+                                        }
+                                        else
+                                        {
+                                            d20.Odds[this.abilityScores[Ability.Strength]] = d20.Odds[roll];
+                                        }
 
-                                    d20.Odds[roll] = 0;
+                                        d20.Odds[roll] = 0;
+                                    }
                                 }
                             }
                         };
@@ -407,7 +410,7 @@
 
                     this.AllocateStandardArray(Ability.Charisma);
 
-                    for (int i = 4; i < this.level; i += 4)
+                    for (int i = 4; i <= this.level && i < 20; i += 4)
                     {
                         this.AbilityScoreImprovement();
                     }
@@ -424,6 +427,7 @@
                                 if (((d20 as Check).RelevantSkill is not null && !this.skillProficiencies.Contains((Skill)(d20 as Check).RelevantSkill))
                                     | (d20 as Check).RelevantSkill is null)
                                 {
+                                    // And that proficiency bonus is not already added based on tool
                                     if (((d20 as Check).RelevantTool is not null && !this.toolProficiencies.Contains((Tool)(d20 as Check).RelevantTool))
                                     | (d20 as Check).RelevantTool is null)
                                     {
@@ -454,45 +458,210 @@
                     this.AddProficiencyOutOf(new List<Skill> { Skill.History, Skill.Insight, Skill.Medicine, Skill.Persuasion, Skill.Religion });
                     this.AddProficiencyOutOf(new List<Skill> { Skill.History, Skill.Insight, Skill.Medicine, Skill.Persuasion, Skill.Religion });
                     this.AllocateStandardArray(Ability.Wisdom);
-                    throw new NotImplementedException("Still missing features and subclasses");
+
+                    for (int i = 4; i <= this.level && i < 20; i += 4)
+                    {
+                        this.AbilityScoreImprovement();
+                    }
+
+                    throw new NotImplementedException("Still missing subclasses");
                     break;
                 case PlayerClass.Druid:
                     this.AddProficiencyOutOf(new List<Skill> { Skill.Arcana, Skill.AnimalHandling, Skill.Insight, Skill.Medicine, Skill.Nature, Skill.Perception, Skill.Religion, Skill.Survival });
                     this.AddProficiencyOutOf(new List<Skill> { Skill.Arcana, Skill.AnimalHandling, Skill.Insight, Skill.Medicine, Skill.Nature, Skill.Perception, Skill.Religion, Skill.Survival });
                     this.AllocateStandardArray(Ability.Wisdom);
-                    throw new NotImplementedException("Still missing features and subclasses");
+
+                    for (int i = 4; i <= this.level && i < 20; i += 4)
+                    {
+                        this.AbilityScoreImprovement();
+                    }
+
+                    throw new NotImplementedException("Still missing subclasses");
                     break;
                 case PlayerClass.Fighter:
                     this.AddProficiencyOutOf(new List<Skill> { Skill.Acrobatics, Skill.AnimalHandling, Skill.Athletics, Skill.History, Skill.Insight, Skill.Intimidation, Skill.Perception });
                     this.AddProficiencyOutOf(new List<Skill> { Skill.Acrobatics, Skill.AnimalHandling, Skill.Athletics, Skill.History, Skill.Insight, Skill.Intimidation, Skill.Perception });
                     this.AllocateStandardArray(Ability.Strength, Ability.Dexterity);
-                    throw new NotImplementedException("Still missing features and subclasses");
+
+                    for (int i = 4; i <= this.level && i < 20; i += 4)
+                    {
+                        this.AbilityScoreImprovement();
+                    }
+
+                    if (this.level >= 6)
+                    {
+                        this.AbilityScoreImprovement();
+                    }
+
+                    if (this.level >= 14)
+                    {
+                        this.AbilityScoreImprovement();
+                    }
+
+                    if (this.level >= 19)
+                    {
+                        this.AbilityScoreImprovement();
+                    }
+
+                    throw new NotImplementedException("Still missing subclasses");
                     break;
                 case PlayerClass.Monk:
                     this.AddProficiencyOutOf(new List<Skill> { Skill.Acrobatics, Skill.Athletics, Skill.History, Skill.Insight, Skill.Religion, Skill.Stealth });
                     this.AddProficiencyOutOf(new List<Skill> { Skill.Acrobatics, Skill.Athletics, Skill.History, Skill.Insight, Skill.Religion, Skill.Stealth });
                     this.AllocateStandardArray(Ability.Dexterity, Ability.Wisdom);
-                    throw new NotImplementedException("Still missing features and subclasses");
+
+                    for (int i = 4; i <= this.level && i < 20; i += 4)
+                    {
+                        this.AbilityScoreImprovement();
+                    }
+
+                    if (this.level >= 14)
+                    {
+                        for (int i = 0; i < 6; i++)
+                        {
+                            if (!this.saveProficiencies.Contains((Ability)i))
+                            {
+                                this.saveProficiencies.Add((Ability)i);
+                            }
+                        }
+                    }
+
+                    throw new NotImplementedException("Still missing subclasses");
                     break;
                 case PlayerClass.Paladin:
                     this.AddProficiencyOutOf(new List<Skill> { Skill.Athletics, Skill.Insight, Skill.Intimidation, Skill.Medicine, Skill.Persuasion, Skill.Religion });
                     this.AddProficiencyOutOf(new List<Skill> { Skill.Athletics, Skill.Insight, Skill.Intimidation, Skill.Medicine, Skill.Persuasion, Skill.Religion });
                     this.AllocateStandardArray(Ability.Charisma, Ability.Strength);
-                    throw new NotImplementedException("Still missing features and subclasses");
+
+                    for (int i = 4; i <= this.level && i < 20; i += 4)
+                    {
+                        this.AbilityScoreImprovement();
+                    }
+
+                    throw new NotImplementedException("Still missing subclasses");
                     break;
                 case PlayerClass.Ranger:
                     this.AddProficiencyOutOf(new List<Skill> { Skill.AnimalHandling, Skill.Athletics, Skill.Insight, Skill.Investigation, Skill.Nature, Skill.Perception, Skill.Stealth, Skill.Survival });
                     this.AddProficiencyOutOf(new List<Skill> { Skill.AnimalHandling, Skill.Athletics, Skill.Insight, Skill.Investigation, Skill.Nature, Skill.Perception, Skill.Stealth, Skill.Survival });
                     this.AddProficiencyOutOf(new List<Skill> { Skill.AnimalHandling, Skill.Athletics, Skill.Insight, Skill.Investigation, Skill.Nature, Skill.Perception, Skill.Stealth, Skill.Survival });
                     this.AllocateStandardArray(Ability.Dexterity, Ability.Wisdom);
-                    throw new NotImplementedException("Still missing features and subclasses");
+
+                    for (int i = 4; i <= this.level && i < 20; i += 4)
+                    {
+                        this.AbilityScoreImprovement();
+                    }
+
+                    throw new NotImplementedException("Still missing subclasses");
                     break;
                 case PlayerClass.Rogue:
+                    if (!this.toolProficiencies.Contains(Tool.Thieves))
+                    {
+                        this.toolProficiencies.Add(Tool.Thieves);
+                    }
+
                     this.AddProficiencyOutOf(new List<Skill> { Skill.Acrobatics, Skill.Athletics, Skill.Deception, Skill.Insight, Skill.Intimidation, Skill.Investigation, Skill.Perception, Skill.Performance, Skill.Persuasion, Skill.SleightOfHand, Skill.Stealth });
                     this.AddProficiencyOutOf(new List<Skill> { Skill.Acrobatics, Skill.Athletics, Skill.Deception, Skill.Insight, Skill.Intimidation, Skill.Investigation, Skill.Perception, Skill.Performance, Skill.Persuasion, Skill.SleightOfHand, Skill.Stealth });
                     this.AddProficiencyOutOf(new List<Skill> { Skill.Acrobatics, Skill.Athletics, Skill.Deception, Skill.Insight, Skill.Intimidation, Skill.Investigation, Skill.Perception, Skill.Performance, Skill.Persuasion, Skill.SleightOfHand, Skill.Stealth });
+
+                    Random randy = new Random();
+                    if (randy.Next(Math.Max(this.skillProficiencies.Count - this.skillExpertises.Count + 1, 0)) == 0 && !this.toolExpertises.Contains(Tool.Thieves))
+                    {
+                        this.toolExpertises.Add(Tool.Thieves);
+                    }
+                    else
+                    {
+                        this.AddRandomExpertise();
+                    }
+
+                    if (randy.Next(Math.Max(this.skillProficiencies.Count - this.skillExpertises.Count + 1, 0)) == 0 && !this.toolExpertises.Contains(Tool.Thieves))
+                    {
+                        this.toolExpertises.Add(Tool.Thieves);
+                    }
+                    else
+                    {
+                        this.AddRandomExpertise();
+                    }
+
                     this.AllocateStandardArray(Ability.Dexterity);
-                    throw new NotImplementedException("Still missing features and subclasses");
+
+                    for (int i = 4; i <= this.level && i < 20; i += 4)
+                    {
+                        this.AbilityScoreImprovement();
+                    }
+
+                    if (this.level >= 6)
+                    {
+                        if (randy.Next(Math.Max(this.skillProficiencies.Count - this.skillExpertises.Count + 1, 0)) == 0 && !this.toolExpertises.Contains(Tool.Thieves))
+                        {
+                            this.toolExpertises.Add(Tool.Thieves);
+                        }
+                        else
+                        {
+                            this.AddRandomExpertise();
+                        }
+
+                        if (randy.Next(Math.Max(this.skillProficiencies.Count - this.skillExpertises.Count + 1, 0)) == 0 && !this.toolExpertises.Contains(Tool.Thieves))
+                        {
+                            this.toolExpertises.Add(Tool.Thieves);
+                        }
+                        else
+                        {
+                            this.AddRandomExpertise();
+                        }
+                    }
+
+                    if (this.level >= 10)
+                    {
+                        this.AbilityScoreImprovement();
+                    }
+
+                    if (this.level >= 11)
+                    {
+                        Action<D20Test> reliableTalent = d20 =>
+                        {
+                            if (d20 is Check)
+                            {
+                                // Check for proficiency bonus being added.
+                                if (((d20 as Check).RelevantSkill is not null && this.skillProficiencies.Contains((Skill)(d20 as Check).RelevantSkill))
+                                    | ((d20 as Check).RelevantTool is not null && this.toolProficiencies.Contains((Tool)(d20 as Check).RelevantTool)))
+                                {
+                                    foreach (int roll in d20.Odds.Keys)
+                                    {
+                                        if (roll < 10)
+                                        {
+                                            if (d20.Odds.ContainsKey(10))
+                                            {
+                                                d20.Odds[10] += d20.Odds[roll];
+                                            }
+                                            else
+                                            {
+                                                d20.Odds[10] = d20.Odds[roll];
+                                            }
+
+                                            d20.Odds[roll] = 0;
+                                        }
+                                    }
+                                }
+                            }
+                        };
+
+                        this.modifiers.Enqueue(reliableTalent, ModifierPriority.Rerolls);
+                    }
+
+                    if (this.level >= 15)
+                    {
+                        if (!this.saveProficiencies.Contains(Ability.Wisdom))
+                        {
+                            this.saveProficiencies.Add(Ability.Wisdom);
+                        }
+                    }
+
+                    if (this.level >= 19)
+                    {
+                        this.AbilityScoreImprovement();
+                    }
+
+                    throw new NotImplementedException("Still missing subclasses");
                     break;
                 case PlayerClass.Sorcerer:
                     this.AddProficiencyOutOf(new List<Skill> { Skill.Arcana, Skill.Deception, Skill.Insight, Skill.Intimidation, Skill.Persuasion, Skill.Religion });
