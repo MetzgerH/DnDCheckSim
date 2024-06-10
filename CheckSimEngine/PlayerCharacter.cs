@@ -354,6 +354,11 @@
                         this.AbilityScoreImprovement();
                     }
 
+                    if (this.level >= 19)
+                    {
+                        this.AbilityScoreImprovement();
+                    }
+
                     if (this.level >= 18)
                     {
                         Action<D20Test> indomitableMight = d20 =>
@@ -452,6 +457,11 @@
                         this.AddRandomExpertise();
                     }
 
+                    if (this.level >= 19)
+                    {
+                        this.AbilityScoreImprovement();
+                    }
+
                     throw new NotImplementedException("Still missing subclasses");
                     break;
                 case PlayerClass.Cleric:
@@ -464,6 +474,11 @@
                         this.AbilityScoreImprovement();
                     }
 
+                    if (this.level >= 19)
+                    {
+                        this.AbilityScoreImprovement();
+                    }
+
                     throw new NotImplementedException("Still missing subclasses");
                     break;
                 case PlayerClass.Druid:
@@ -472,6 +487,11 @@
                     this.AllocateStandardArray(Ability.Wisdom);
 
                     for (int i = 4; i <= this.level && i < 20; i += 4)
+                    {
+                        this.AbilityScoreImprovement();
+                    }
+
+                    if (this.level >= 19)
                     {
                         this.AbilityScoreImprovement();
                     }
@@ -526,6 +546,11 @@
                         }
                     }
 
+                    if (this.level >= 19)
+                    {
+                        this.AbilityScoreImprovement();
+                    }
+
                     throw new NotImplementedException("Still missing subclasses");
                     break;
                 case PlayerClass.Paladin:
@@ -534,6 +559,11 @@
                     this.AllocateStandardArray(Ability.Charisma, Ability.Strength);
 
                     for (int i = 4; i <= this.level && i < 20; i += 4)
+                    {
+                        this.AbilityScoreImprovement();
+                    }
+
+                    if (this.level >= 19)
                     {
                         this.AbilityScoreImprovement();
                     }
@@ -547,6 +577,11 @@
                     this.AllocateStandardArray(Ability.Dexterity, Ability.Wisdom);
 
                     for (int i = 4; i <= this.level && i < 20; i += 4)
+                    {
+                        this.AbilityScoreImprovement();
+                    }
+
+                    if (this.level >= 19)
                     {
                         this.AbilityScoreImprovement();
                     }
@@ -667,18 +702,51 @@
                     this.AddProficiencyOutOf(new List<Skill> { Skill.Arcana, Skill.Deception, Skill.Insight, Skill.Intimidation, Skill.Persuasion, Skill.Religion });
                     this.AddProficiencyOutOf(new List<Skill> { Skill.Arcana, Skill.Deception, Skill.Insight, Skill.Intimidation, Skill.Persuasion, Skill.Religion });
                     this.AllocateStandardArray(Ability.Charisma);
-                    throw new NotImplementedException("Still missing features and subclasses");
+
+                    for (int i = 4; i <= this.level && i < 20; i += 4)
+                    {
+                        this.AbilityScoreImprovement();
+                    }
+
+                    if (this.level >= 19)
+                    {
+                        this.AbilityScoreImprovement();
+                    }
+
+                    throw new NotImplementedException("Still missing subclasses");
                     break;
                 case PlayerClass.Warlock:
                     this.AddProficiencyOutOf(new List<Skill> { Skill.Arcana, Skill.Deception, Skill.History, Skill.Intimidation, Skill.Investigation, Skill.Nature, Skill.Religion });
                     this.AddProficiencyOutOf(new List<Skill> { Skill.Arcana, Skill.Deception, Skill.History, Skill.Intimidation, Skill.Investigation, Skill.Nature, Skill.Religion });
                     this.AllocateStandardArray(Ability.Charisma);
-                    throw new NotImplementedException("Still missing features and subclasses");
+
+                    for (int i = 4; i <= this.level && i < 20; i += 4)
+                    {
+                        this.AbilityScoreImprovement();
+                    }
+
+                    if (this.level >= 19)
+                    {
+                        this.AbilityScoreImprovement();
+                    }
+
+                    throw new NotImplementedException("Still missing subclasses");
                     break;
                 case PlayerClass.Wizard:
                     this.AddProficiencyOutOf(new List<Skill> { Skill.Arcana, Skill.History, Skill.Insight, Skill.Investigation, Skill.Medicine, Skill.Religion });
                     this.AddProficiencyOutOf(new List<Skill> { Skill.Arcana, Skill.History, Skill.Insight, Skill.Investigation, Skill.Medicine, Skill.Religion });
                     this.AllocateStandardArray(Ability.Intelligence);
+
+                    for (int i = 4; i <= this.level && i < 20; i += 4)
+                    {
+                        this.AbilityScoreImprovement();
+                    }
+
+                    if (this.level >= 19)
+                    {
+                        this.AbilityScoreImprovement();
+                    }
+
                     throw new NotImplementedException("Still missing features and subclasses");
                     break;
             }
