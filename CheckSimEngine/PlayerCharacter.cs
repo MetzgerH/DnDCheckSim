@@ -65,11 +65,14 @@
         private Dictionary<Ability, int> abilityScores;
         private Dictionary<Ability, int> abilityScoreMaximums;
         private PriorityQueue<Action<D20Test>, ModifierPriority> modifiers;
-        private bool useRacialASI = true;
+        private ConfigurationManager config;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlayerCharacter"/> class.
         /// </summary>
+        /// /// <param name="config">
+        /// The configuration this instance is using.
+        /// </param>
         /// <param name="level">
         /// The class level of this player instance.
         /// </param>
@@ -79,8 +82,9 @@
         /// <param name="playerClass">
         /// The class of this player instance. Randomly chosen if null.
         /// </param>
-        public PlayerCharacter(int level, Lineage? lineage = null, PlayerClass? playerClass = null)
+        public PlayerCharacter(ConfigurationManager config, int level, Lineage? lineage = null, PlayerClass? playerClass = null)
         {
+            this.config = config;
             this.skillProficiencies = new List<Skill>();
             this.skillExpertises = new List<Skill>();
             this.toolProficiencies = new List<Tool>();
@@ -326,12 +330,11 @@
         /// </param>
         private void ApplyClass(PlayerClass? playerClass)
         {
+            Random randy = new Random();
             PlayerClass classToApply;
             if (playerClass == null)
             {
                 // Set classToApply to a random lineage
-                Random randy = new Random();
-
                 classToApply = (PlayerClass)randy.Next((int)PlayerClass.Max);
             }
             else
@@ -396,21 +399,41 @@
                         this.IncreaseAbilityScore(Ability.Constitution, 4);
                     }
 
-                    throw new NotImplementedException("Still missing subclasses");
+                    if (this.level >= 3)
+                    {
+                        List<string> subclasses = new List<string>();
+                        if (this.config.SourceBooks.Contains("Player's Handbook"))
+                        {
+                            subclasses.Add("Berserker");
+                            subclasses.Add("Totem");
+                        }
+
+                        if (subclasses[randy.Next(subclasses.Count)] == "Totem") // if Path of the Totem is selected
+                        {
+                            if (this.level >= 6)
+                            {
+                                if (randy.Next() % 5 == 4) // if the Tiger is selected
+                                {
+                                    this.AddProficiencyOutOf(new List<Skill> { Skill.Acrobatics, Skill.Athletics, Skill.Stealth, Skill.Survival });
+                                }
+                            }
+                        }
+                    }
+
                     break;
                 case PlayerClass.Bard:
                     // Three random skills
                     // Start by constructing list of all skills
-                    List<Skill> list = new List<Skill>();
+                    List<Skill> allSkills = new List<Skill>();
                     for (int i = 0; i < (int)Skill.Max; i++)
                     {
-                        list.Add((Skill)i);
+                        allSkills.Add((Skill)i);
                     }
 
                     // Now choose three
                     for (int i = 0; i < 3; i++)
                     {
-                        this.AddProficiencyOutOf(list);
+                        this.AddProficiencyOutOf(allSkills);
                     }
 
                     this.AllocateStandardArray(Ability.Charisma);
@@ -449,6 +472,22 @@
                     {
                         this.AddRandomExpertise();
                         this.AddRandomExpertise();
+
+                        List<string> subclasses = new List<string>();
+                        if (this.config.SourceBooks.Contains("Player's Handbook"))
+                        {
+                            subclasses.Add("Lore");
+                            subclasses.Add("Valor");
+                        }
+
+                        if (subclasses[randy.Next(subclasses.Count)] == "Lore") // if College of Lore is selected
+                        {
+                            // Gain proficiency in 3 random skills
+                            for (int i = 0; i < 3; i++)
+                            {
+                                this.AddProficiencyOutOf(allSkills);
+                            }
+                        }
                     }
 
                     if (this.level >= 10)
@@ -462,12 +501,38 @@
                         this.AbilityScoreImprovement();
                     }
 
-                    throw new NotImplementedException("Still missing subclasses");
                     break;
                 case PlayerClass.Cleric:
                     this.AddProficiencyOutOf(new List<Skill> { Skill.History, Skill.Insight, Skill.Medicine, Skill.Persuasion, Skill.Religion });
                     this.AddProficiencyOutOf(new List<Skill> { Skill.History, Skill.Insight, Skill.Medicine, Skill.Persuasion, Skill.Religion });
                     this.AllocateStandardArray(Ability.Wisdom);
+
+                    List<string> subclasses = new List<string>();
+                    if (this.config.SourceBooks.Contains("Player's Handbook"))
+                    {
+                        subclasses.Add("Knowledge");
+                        subclasses.Add("Life");
+                        subclasses.Add("Light");
+                        subclasses.Add("Nature");
+                        subclasses.Add("Tempest");
+                        subclasses.Add("Trickery");
+                        subclasses.Add("War");
+                    }
+
+                    if (subclasses[randy.Next(subclasses.Count)] == "Knowledge") // if knowledge domain is selected
+                    {
+                        List<Skill> oldskills = new List<Skill>(this.skillProficiencies);
+                        this.AddProficiencyOutOf(new List<Skill> { Skill.Arcana, Skill.History, Skill.Nature, Skill.Religion });
+                        this.AddProficiencyOutOf(new List<Skill> { Skill.Arcana, Skill.History, Skill.Nature, Skill.Religion });
+                        foreach (Skill skill in this.skillProficiencies.Except(oldskills))
+                        {
+                            if (!this.skillExpertises.Contains(skill))
+                            {
+                                skillExpertises.Add(skill);
+                            }
+                        }
+
+                    }
 
                     for (int i = 4; i <= this.level && i < 20; i += 4)
                     {
@@ -598,7 +663,6 @@
                     this.AddProficiencyOutOf(new List<Skill> { Skill.Acrobatics, Skill.Athletics, Skill.Deception, Skill.Insight, Skill.Intimidation, Skill.Investigation, Skill.Perception, Skill.Performance, Skill.Persuasion, Skill.SleightOfHand, Skill.Stealth });
                     this.AddProficiencyOutOf(new List<Skill> { Skill.Acrobatics, Skill.Athletics, Skill.Deception, Skill.Insight, Skill.Intimidation, Skill.Investigation, Skill.Perception, Skill.Performance, Skill.Persuasion, Skill.SleightOfHand, Skill.Stealth });
 
-                    Random randy = new Random();
                     if (randy.Next(Math.Max(this.skillProficiencies.Count - this.skillExpertises.Count + 1, 0)) == 0 && !this.toolExpertises.Contains(Tool.Thieves))
                     {
                         this.toolExpertises.Add(Tool.Thieves);
