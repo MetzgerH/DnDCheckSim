@@ -139,7 +139,7 @@
             switch (lineageToApply)
             {
                 case Lineage.Dragonborn:
-                    if (this.useRacialASI)
+                    if (this.config.UseRacialASI)
                     {
                         this.IncreaseAbilityScore(Ability.Strength, 2);
 
@@ -152,7 +152,7 @@
                     List<Tool> toolList = new List<Tool>() { Tool.Smiths, Tool.Brewers, Tool.Masons };
                     this.AddProficiencyOutOf(toolList);
 
-                    if (this.useRacialASI)
+                    if (this.config.UseRacialASI)
                     {
                         this.IncreaseAbilityScore(Ability.Constitution, 2);
 
@@ -408,7 +408,8 @@
                             subclasses.Add("Totem");
                         }
 
-                        if (subclasses[randy.Next(subclasses.Count)] == "Totem") // if Path of the Totem is selected
+                        string selectedSubclass = subclasses[randy.Next(subclasses.Count)];
+                        if (selectedSubclass == "Totem") // if Path of the Totem is selected
                         {
                             if (this.level >= 6)
                             {
@@ -452,12 +453,12 @@
                             if (d20 is Check)
                             {
                                 // Now check that proficiency bonus is not already added based on skill
-                                if (((d20 as Check).RelevantSkill is not null && !this.skillProficiencies.Contains((Skill)(d20 as Check).RelevantSkill))
-                                    | (d20 as Check).RelevantSkill is null)
+                                if (((d20 as Check).RelevantSkill.HasValue && !this.skillProficiencies.Contains((Skill)(d20 as Check).RelevantSkill))
+                                    | !(d20 as Check).RelevantSkill.HasValue)
                                 {
                                     // And that proficiency bonus is not already added based on tool
-                                    if (((d20 as Check).RelevantTool is not null && !this.toolProficiencies.Contains((Tool)(d20 as Check).RelevantTool))
-                                    | (d20 as Check).RelevantTool is null)
+                                    if (((d20 as Check).RelevantTool.HasValue && !this.toolProficiencies.Contains((Tool)(d20 as Check).RelevantTool))
+                                    | !(d20 as Check).RelevantTool.HasValue)
                                     {
                                         d20.ApplyBonus(this.ProficiencyBonus / 2);
                                     }
@@ -480,7 +481,8 @@
                             subclasses.Add("Valor");
                         }
 
-                        if (subclasses[randy.Next(subclasses.Count)] == "Lore") // if College of Lore is selected
+                        string selectedSubclass = subclasses[randy.Next(subclasses.Count)];
+                        if (selectedSubclass == "Lore") // if College of Lore is selected
                         {
                             // Gain proficiency in 3 random skills
                             for (int i = 0; i < 3; i++)
@@ -506,32 +508,33 @@
                     this.AddProficiencyOutOf(new List<Skill> { Skill.History, Skill.Insight, Skill.Medicine, Skill.Persuasion, Skill.Religion });
                     this.AddProficiencyOutOf(new List<Skill> { Skill.History, Skill.Insight, Skill.Medicine, Skill.Persuasion, Skill.Religion });
                     this.AllocateStandardArray(Ability.Wisdom);
-
-                    List<string> subclasses = new List<string>();
-                    if (this.config.SourceBooks.Contains("Player's Handbook"))
                     {
-                        subclasses.Add("Knowledge");
-                        subclasses.Add("Life");
-                        subclasses.Add("Light");
-                        subclasses.Add("Nature");
-                        subclasses.Add("Tempest");
-                        subclasses.Add("Trickery");
-                        subclasses.Add("War");
-                    }
-
-                    if (subclasses[randy.Next(subclasses.Count)] == "Knowledge") // if knowledge domain is selected
-                    {
-                        List<Skill> oldskills = new List<Skill>(this.skillProficiencies);
-                        this.AddProficiencyOutOf(new List<Skill> { Skill.Arcana, Skill.History, Skill.Nature, Skill.Religion });
-                        this.AddProficiencyOutOf(new List<Skill> { Skill.Arcana, Skill.History, Skill.Nature, Skill.Religion });
-                        foreach (Skill skill in this.skillProficiencies.Except(oldskills))
+                        List<string> subclasses = new List<string>();
+                        if (this.config.SourceBooks.Contains("Player's Handbook"))
                         {
-                            if (!this.skillExpertises.Contains(skill))
-                            {
-                                skillExpertises.Add(skill);
-                            }
+                            subclasses.Add("Knowledge");
+                            subclasses.Add("Life");
+                            subclasses.Add("Light");
+                            subclasses.Add("Nature");
+                            subclasses.Add("Tempest");
+                            subclasses.Add("Trickery");
+                            subclasses.Add("War");
                         }
 
+                        string selectedSubclass = subclasses[randy.Next(subclasses.Count)];
+                        if (selectedSubclass == "Knowledge") // if knowledge domain is selected
+                        {
+                            List<Skill> oldskills = new List<Skill>(this.skillProficiencies);
+                            this.AddProficiencyOutOf(new List<Skill> { Skill.Arcana, Skill.History, Skill.Nature, Skill.Religion });
+                            this.AddProficiencyOutOf(new List<Skill> { Skill.Arcana, Skill.History, Skill.Nature, Skill.Religion });
+                            foreach (Skill skill in this.skillProficiencies.Except(oldskills))
+                            {
+                                if (!this.skillExpertises.Contains(skill))
+                                {
+                                    this.skillExpertises.Add(skill);
+                                }
+                            }
+                        }
                     }
 
                     for (int i = 4; i <= this.level && i < 20; i += 4)
@@ -544,7 +547,6 @@
                         this.AbilityScoreImprovement();
                     }
 
-                    throw new NotImplementedException("Still missing subclasses");
                     break;
                 case PlayerClass.Druid:
                     this.AddProficiencyOutOf(new List<Skill> { Skill.Arcana, Skill.AnimalHandling, Skill.Insight, Skill.Medicine, Skill.Nature, Skill.Perception, Skill.Religion, Skill.Survival });
@@ -561,7 +563,16 @@
                         this.AbilityScoreImprovement();
                     }
 
-                    throw new NotImplementedException("Still missing subclasses");
+                    if (this.level >= 2)
+                    {
+                        List<string> subclasses = new List<string>();
+                        if (this.config.SourceBooks.Contains("Player's Handbook"))
+                        {
+                            subclasses.Add("Land");
+                            subclasses.Add("Moon");
+                        }
+                    }
+
                     break;
                 case PlayerClass.Fighter:
                     this.AddProficiencyOutOf(new List<Skill> { Skill.Acrobatics, Skill.AnimalHandling, Skill.Athletics, Skill.History, Skill.Insight, Skill.Intimidation, Skill.Perception });
@@ -571,6 +582,61 @@
                     for (int i = 4; i <= this.level && i < 20; i += 4)
                     {
                         this.AbilityScoreImprovement();
+                    }
+
+                    if (this.level >= 3)
+                    {
+                        List<string> subclasses = new List<string>();
+                        if (this.config.SourceBooks.Contains("Player's Handbook"))
+                        {
+                            subclasses.Add("Battlemaster");
+                            subclasses.Add("Champion");
+                            subclasses.Add("Eldritch Knight");
+                        }
+
+                        string selectedSubclass = subclasses[randy.Next(subclasses.Count)];
+                        if (selectedSubclass == "Battlemaster")
+                        {
+                            List<Tool> artisansTools = new List<Tool>();
+                            for (int i = 0; i < (int)Tool.Artisan; i++)
+                            {
+                                artisansTools.Add((Tool)i);
+                            }
+
+                            this.AddProficiencyOutOf(artisansTools);
+                        }
+                        else if (selectedSubclass == "Champion")
+                        {
+                            if (this.level >= 7)
+                            {
+                                // Remarkable Athlete is a feature that adds half proficiency bonus (rounded down) to Strength, Dexterity, or Constitution checks where the proficiency bonus is not already added.
+                                Action<D20Test> remarkableAthlete = d20 =>
+                                {
+                                    // First check that this is a skill.
+                                    if (d20 is Check)
+                                    {
+                                        // Now check that it is based on Strength, Dexterity, or Constitution
+                                        if (d20.RelevantAbility.HasValue && Array.Exists([Ability.Strength, Ability.Dexterity, Ability.Constitution], elem => elem == d20.RelevantAbility))
+                                        {
+                                            // Now check that proficiency bonus is not already added based on skill
+                                            if (((d20 as Check).RelevantSkill.HasValue && !this.skillProficiencies.Contains((Skill)(d20 as Check).RelevantSkill))
+                                                | !(d20 as Check).RelevantSkill.HasValue)
+                                            {
+                                                // And that proficiency bonus is not already added based on tool
+                                                if (((d20 as Check).RelevantTool.HasValue && !this.toolProficiencies.Contains((Tool)(d20 as Check).RelevantTool))
+                                                | !(d20 as Check).RelevantTool.HasValue)
+                                                {
+                                                    d20.ApplyBonus(this.ProficiencyBonus / 2);
+                                                }
+                                            }
+                                        }
+                                    }
+                                };
+
+                                this.modifiers.Enqueue(remarkableAthlete, ModifierPriority.AfterAdvantage);
+                            }
+                        }
+
                     }
 
                     if (this.level >= 6)
@@ -588,7 +654,6 @@
                         this.AbilityScoreImprovement();
                     }
 
-                    throw new NotImplementedException("Still missing subclasses");
                     break;
                 case PlayerClass.Monk:
                     this.AddProficiencyOutOf(new List<Skill> { Skill.Acrobatics, Skill.Athletics, Skill.History, Skill.Insight, Skill.Religion, Skill.Stealth });
@@ -598,6 +663,17 @@
                     for (int i = 4; i <= this.level && i < 20; i += 4)
                     {
                         this.AbilityScoreImprovement();
+                    }
+
+                    if (this.level >= 3)
+                    {
+                        List<string> subclasses = new List<string>();
+                        if (this.config.SourceBooks.Contains("Player's Handbook"))
+                        {
+                            subclasses.Add("Open Hand");
+                            subclasses.Add("Four Elements");
+                            subclasses.Add("Shadow");
+                        }
                     }
 
                     if (this.level >= 14)
@@ -616,7 +692,6 @@
                         this.AbilityScoreImprovement();
                     }
 
-                    throw new NotImplementedException("Still missing subclasses");
                     break;
                 case PlayerClass.Paladin:
                     this.AddProficiencyOutOf(new List<Skill> { Skill.Athletics, Skill.Insight, Skill.Intimidation, Skill.Medicine, Skill.Persuasion, Skill.Religion });
@@ -628,12 +703,22 @@
                         this.AbilityScoreImprovement();
                     }
 
+                    if (this.level >= 3)
+                    {
+                        List<string> subclasses = new List<string>();
+                        if (this.config.SourceBooks.Contains("Player's Handbook"))
+                        {
+                            subclasses.Add("Ancients");
+                            subclasses.Add("Devotion");
+                            subclasses.Add("Vengeance");
+                        }
+                    }
+
                     if (this.level >= 19)
                     {
                         this.AbilityScoreImprovement();
                     }
 
-                    throw new NotImplementedException("Still missing subclasses");
                     break;
                 case PlayerClass.Ranger:
                     this.AddProficiencyOutOf(new List<Skill> { Skill.AnimalHandling, Skill.Athletics, Skill.Insight, Skill.Investigation, Skill.Nature, Skill.Perception, Skill.Stealth, Skill.Survival });
@@ -646,12 +731,21 @@
                         this.AbilityScoreImprovement();
                     }
 
+                    if (this.level >= 3)
+                    {
+                        List<string> subclasses = new List<string>();
+                        if (this.config.SourceBooks.Contains("Player's Handbook"))
+                        {
+                            subclasses.Add("Beastmaster");
+                            subclasses.Add("Hunter");
+                        }
+                    }
+
                     if (this.level >= 19)
                     {
                         this.AbilityScoreImprovement();
                     }
 
-                    throw new NotImplementedException("Still missing subclasses");
                     break;
                 case PlayerClass.Rogue:
                     if (!this.toolProficiencies.Contains(Tool.Thieves))
@@ -686,6 +780,31 @@
                     for (int i = 4; i <= this.level && i < 20; i += 4)
                     {
                         this.AbilityScoreImprovement();
+                    }
+
+                    if (this.level >= 3)
+                    {
+                        List<string> subclasses = new List<string>();
+                        if (this.config.SourceBooks.Contains("Player's Handbook"))
+                        {
+                            subclasses.Add("Arcane Trickster");
+                            subclasses.Add("Assassin");
+                            subclasses.Add("Thief");
+                        }
+
+                        string selectedSubclass = subclasses[randy.Next(subclasses.Count)];
+                        if (selectedSubclass == "Assassin")
+                        {
+                            if (!this.toolProficiencies.Contains(Tool.Disguise))
+                            {
+                                this.toolProficiencies.Add(Tool.Disguise);
+                            }
+
+                            if (!this.toolProficiencies.Contains(Tool.Poisoners))
+                            {
+                                this.toolProficiencies.Add(Tool.Poisoners);
+                            }
+                        }
                     }
 
                     if (this.level >= 6)
@@ -772,12 +891,21 @@
                         this.AbilityScoreImprovement();
                     }
 
+                    if (this.level >= 3)
+                    {
+                        List<string> subclasses = new List<string>();
+                        if (this.config.SourceBooks.Contains("Player's Handbook"))
+                        {
+                            subclasses.Add("Draconic Bloodline");
+                            subclasses.Add("Wild Magic");
+                        }
+                    }
+
                     if (this.level >= 19)
                     {
                         this.AbilityScoreImprovement();
                     }
 
-                    throw new NotImplementedException("Still missing subclasses");
                     break;
                 case PlayerClass.Warlock:
                     this.AddProficiencyOutOf(new List<Skill> { Skill.Arcana, Skill.Deception, Skill.History, Skill.Intimidation, Skill.Investigation, Skill.Nature, Skill.Religion });
@@ -789,12 +917,22 @@
                         this.AbilityScoreImprovement();
                     }
 
+                    if (this.level >= 3)
+                    {
+                        List<string> subclasses = new List<string>();
+                        if (this.config.SourceBooks.Contains("Player's Handbook"))
+                        {
+                            subclasses.Add("Archfey");
+                            subclasses.Add("Fiend");
+                            subclasses.Add("Great Old One");
+                        }
+                    }
+
                     if (this.level >= 19)
                     {
                         this.AbilityScoreImprovement();
                     }
 
-                    throw new NotImplementedException("Still missing subclasses");
                     break;
                 case PlayerClass.Wizard:
                     this.AddProficiencyOutOf(new List<Skill> { Skill.Arcana, Skill.History, Skill.Insight, Skill.Investigation, Skill.Medicine, Skill.Religion });
@@ -806,12 +944,27 @@
                         this.AbilityScoreImprovement();
                     }
 
+                    if (this.level >= 3)
+                    {
+                        List<string> subclasses = new List<string>();
+                        if (this.config.SourceBooks.Contains("Player's Handbook"))
+                        {
+                            subclasses.Add("Abjuration");
+                            subclasses.Add("Conjuration");
+                            subclasses.Add("Divination");
+                            subclasses.Add("Enchantment");
+                            subclasses.Add("Evocation");
+                            subclasses.Add("Illusion");
+                            subclasses.Add("Necromancy");
+                            subclasses.Add("Transmutation");
+                        }
+                    }
+
                     if (this.level >= 19)
                     {
                         this.AbilityScoreImprovement();
                     }
 
-                    throw new NotImplementedException("Still missing features and subclasses");
                     break;
             }
 
