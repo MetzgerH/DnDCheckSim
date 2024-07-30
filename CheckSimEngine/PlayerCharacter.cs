@@ -94,6 +94,9 @@
             this.abilityScoreMaximums = new Dictionary<Ability, int>();
             this.modifiers = new PriorityQueue<Action<D20Test>, ModifierPriority>();
 
+            this.modifiers.Enqueue(d20 => { d20.ApplyAdvantage(); }, ModifierPriority.Advantage);
+            this.modifiers.Enqueue(this.ApplyProficiencies, ModifierPriority.AfterAdvantage);
+
             for (int i = 0; i < 6; i++)
             {
                 this.abilityScores[(Ability)i] = 0;
@@ -179,7 +182,7 @@
                         this.skillProficiencies.Add(Skill.Perception);
                     }
 
-                    if (this.useRacialASI)
+                    if (this.config.UseRacialASI)
                     {
                         this.IncreaseAbilityScore(Ability.Dexterity, 2);
 
@@ -205,7 +208,7 @@
 
                     break;
                 case Lineage.Gnome:
-                    if (this.useRacialASI)
+                    if (this.config.UseRacialASI)
                     {
                         this.IncreaseAbilityScore(Ability.Intelligence, 2);
 
@@ -226,7 +229,7 @@
 
                     break;
                 case Lineage.HalfElf:
-                    if (this.useRacialASI)
+                    if (this.config.UseRacialASI)
                     {
                         this.IncreaseAbilityScore(Ability.Charisma, 2);
 
@@ -271,7 +274,7 @@
                     // Add the modifier to this player character.
                     this.modifiers.Enqueue(lucky, ModifierPriority.Rerolls);
 
-                    if (this.useRacialASI)
+                    if (this.config.UseRacialASI)
                     {
                         this.IncreaseAbilityScore(Ability.Dexterity, 2);
 
@@ -297,7 +300,7 @@
                         this.skillProficiencies.Add(Skill.Intimidation);
                     }
 
-                    if (this.useRacialASI)
+                    if (this.config.UseRacialASI)
                     {
                         this.IncreaseAbilityScore(Ability.Strength, 2);
                         this.IncreaseAbilityScore(Ability.Constitution, 2);
@@ -312,7 +315,7 @@
 
                     break;
                 case Lineage.Tiefling:
-                    if (this.useRacialASI)
+                    if (this.config.UseRacialASI)
                     {
                         this.IncreaseAbilityScore(Ability.Charisma, 2);
                         this.IncreaseAbilityScore(Ability.Intelligence, 2);
@@ -471,8 +474,8 @@
 
                     if (this.level >= 3)
                     {
-                        this.AddRandomExpertise();
-                        this.AddRandomExpertise();
+                        this.AddRandomSkillExpertise();
+                        this.AddRandomSkillExpertise();
 
                         List<string> subclasses = new List<string>();
                         if (this.config.SourceBooks.Contains("Player's Handbook"))
@@ -494,8 +497,8 @@
 
                     if (this.level >= 10)
                     {
-                        this.AddRandomExpertise();
-                        this.AddRandomExpertise();
+                        this.AddRandomSkillExpertise();
+                        this.AddRandomSkillExpertise();
                     }
 
                     if (this.level >= 19)
@@ -763,7 +766,7 @@
                     }
                     else
                     {
-                        this.AddRandomExpertise();
+                        this.AddRandomSkillExpertise();
                     }
 
                     if (randy.Next(Math.Max(this.skillProficiencies.Count - this.skillExpertises.Count + 1, 0)) == 0 && !this.toolExpertises.Contains(Tool.Thieves))
@@ -772,7 +775,7 @@
                     }
                     else
                     {
-                        this.AddRandomExpertise();
+                        this.AddRandomSkillExpertise();
                     }
 
                     this.AllocateStandardArray(Ability.Dexterity);
@@ -815,7 +818,7 @@
                         }
                         else
                         {
-                            this.AddRandomExpertise();
+                            this.AddRandomSkillExpertise();
                         }
 
                         if (randy.Next(Math.Max(this.skillProficiencies.Count - this.skillExpertises.Count + 1, 0)) == 0 && !this.toolExpertises.Contains(Tool.Thieves))
@@ -824,7 +827,7 @@
                         }
                         else
                         {
-                            this.AddRandomExpertise();
+                            this.AddRandomSkillExpertise();
                         }
                     }
 
@@ -1067,7 +1070,7 @@
         /// <summary>
         /// Adds expertise in a random skill that this player is already proficient in.
         /// </summary>
-        private void AddRandomExpertise()
+        private void AddRandomSkillExpertise()
         {
             if (this.skillProficiencies.Count == 0)
             {
@@ -1106,6 +1109,46 @@
             else
             {
                 this.IncreaseAbilityScore((Ability)randy.Next(6), 2);
+            }
+        }
+
+        /// <summary>
+        /// Applies bonuses to <paramref name="d20Test"/> based on proficiency in its relevant saving throw/skill/tool.
+        /// </summary>
+        /// <param name="d20Test">
+        /// The D20Test to be modified with bonuses.
+        /// </param>
+        private void ApplyProficiencies(D20Test d20Test)
+        {
+            if (d20Test is Save)
+            {
+                if ((d20Test as Save).RelevantAbility != null && this.saveProficiencies.Contains((Ability)(d20Test as Save).RelevantAbility))
+                {
+                    d20Test.ApplyBonus(this.ProficiencyBonus);
+                }
+            }
+            else if (d20Test is Check)
+            {
+                // Apply proficiency bonus if profient in skill or tool (inclusive).
+                if (((d20Test as Check).RelevantSkill != null && this.skillProficiencies.Contains((Skill)(d20Test as Check).RelevantSkill))
+                    || ((d20Test as Check).RelevantTool != null && this.toolProficiencies.Contains((Tool)(d20Test as Check).RelevantTool)))
+                {
+                    d20Test.ApplyBonus(this.ProficiencyBonus);
+                }
+
+                // Also grant advantage if proficient in both.
+                if ((d20Test as Check).RelevantSkill != null && this.skillProficiencies.Contains((Skill)(d20Test as Check).RelevantSkill)
+                    && (d20Test as Check).RelevantTool != null && this.toolProficiencies.Contains((Tool)(d20Test as Check).RelevantTool))
+                {
+                    d20Test.HasAdvantage = true;
+                }
+
+                // Apply proficiency bonus again if expert in skill or tool (inclusive).
+                if (((d20Test as Check).RelevantSkill != null && this.skillExpertises.Contains((Skill)(d20Test as Check).RelevantSkill))
+                    || ((d20Test as Check).RelevantTool != null && this.toolExpertises.Contains((Tool)(d20Test as Check).RelevantTool)))
+                {
+                    d20Test.ApplyBonus(this.ProficiencyBonus);
+                }
             }
         }
     }

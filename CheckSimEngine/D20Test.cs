@@ -92,7 +92,8 @@
     {
         private Ability? relevantAbility;
         private Dictionary<int, double> odds;
-
+        private bool hasAdvantage = false;
+        private bool hasDisadvantage = true;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="D20Test"/> class.
@@ -123,6 +124,42 @@
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether this test has "advantage" (roll twice take the higher) or not.
+        /// Will never set hasAdvantage to false if it is already true, since advantage cannot be taken away.
+        /// </summary>
+        public bool HasAdvantage
+        {
+            get
+            {
+                return this.hasAdvantage;
+            }
+
+            set
+            {
+                // hasAdvantage should never be set to false if it is already true.
+                this.hasAdvantage = value || this.hasAdvantage;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this test has "disadvantage" (roll twice take the higher) or not.
+        /// Will never set hasDisadvantage to false if it is already true, since advantage cannot be taken away.
+        /// </summary>
+        public bool HasDisadvantage
+        {
+            get
+            {
+                return this.hasDisadvantage;
+            }
+
+            set
+            {
+                // hasDisadvantage should never be set to false if it is already true.
+                this.hasDisadvantage = value || this.hasDisadvantage;
+            }
+        }
+
+        /// <summary>
         /// Gets the odds related to this test.
         /// </summary>
         public Dictionary<int,double> Odds
@@ -134,7 +171,7 @@
         }
 
         /// <summary>
-        /// Adds <paramref name="i"/> to the roll.
+        /// Adds <paramref name="bonus"/> to the roll.
         /// </summary>
         /// <param name="bonus">
         /// The bonus to add.
@@ -152,6 +189,42 @@
             foreach (int roll in orderedRolls)
             {
                 this.odds[roll + bonus] = this.odds[roll];
+            }
+        }
+
+        public void ApplyAdvantage()
+        {
+            if (this.HasAdvantage && !this.HasDisadvantage)
+            {
+                Dictionary<int, double> oldOdds = new Dictionary<int, double>(this.odds);
+                this.odds = new Dictionary<int, double>();
+
+                foreach (int die1 in oldOdds.Keys)
+                {
+                    foreach (int die2 in oldOdds.Keys)
+                    {
+                        if (!this.odds.TryAdd(Math.Max(die1, die2), oldOdds[die1] * oldOdds[die2]))
+                        {
+                            this.odds[Math.Max(die1, die2)] = this.odds[Math.Max(die1, die2)] + (oldOdds[die1] * oldOdds[die2]);
+                        }
+                    }
+                }
+            }
+            else if (!this.HasDisadvantage && this.HasDisadvantage)
+            {
+                Dictionary<int, double> oldOdds = new Dictionary<int, double>(this.odds);
+                this.odds = new Dictionary<int, double>();
+
+                foreach (int die1 in oldOdds.Keys)
+                {
+                    foreach (int die2 in oldOdds.Keys)
+                    {
+                        if (!this.odds.TryAdd(Math.Min(die1, die2), oldOdds[die1] * oldOdds[die2]))
+                        {
+                            this.odds[Math.Min(die1, die2)] = this.odds[Math.Min(die1, die2)] + (oldOdds[die1] * oldOdds[die2]);
+                        }
+                    }
+                }
             }
         }
     }
