@@ -109,6 +109,24 @@
             this.ApplyLineage(lineage);
         }
 
+        /// <summary>
+        /// Applies all modifiers, including proficiencies, advantage, disadvantage, special features, etc. to <paramref name="d20Test"/>.
+        /// </summary>
+        /// <param name="d20Test">
+        /// The D20Test (could be a check, saving throw, or just straight D20Test) that this character is performing.
+        /// </param>
+        public void PerformTest(D20Test d20Test)
+        {
+            PriorityQueue<Action<D20Test>, ModifierPriority> replacementQueue = new PriorityQueue<Action<D20Test>, ModifierPriority>();
+            while (this.modifiers.TryDequeue(out Action<D20Test>? item, out ModifierPriority priority))
+            {
+                replacementQueue.Enqueue(item, priority);
+                item(d20Test);
+            }
+
+            this.modifiers = replacementQueue;
+        }
+
         private int ProficiencyBonus
         {
             get
