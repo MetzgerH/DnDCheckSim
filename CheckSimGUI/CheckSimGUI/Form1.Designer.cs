@@ -28,12 +28,43 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Text = "Form1";
+            runButton = new Button();
+            resultsPlot = new ScottPlot.WinForms.FormsPlot();
+            SuspendLayout();
+            // 
+            // runButton
+            // 
+            runButton.Location = new Point(668, 391);
+            runButton.Name = "runButton";
+            runButton.Size = new Size(75, 23);
+            runButton.TabIndex = 0;
+            runButton.Text = "Run Check";
+            runButton.UseVisualStyleBackColor = true;
+            runButton.Click += runButton_Click;
+            // 
+            // resultsPlot
+            // 
+            resultsPlot.DisplayScale = 1F;
+            resultsPlot.Location = new Point(35, 264);
+            resultsPlot.Name = "resultsPlot";
+            resultsPlot.Size = new Size(591, 174);
+            resultsPlot.TabIndex = 1;
+            // 
+            // Form1
+            // 
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(800, 450);
+            Controls.Add(resultsPlot);
+            Controls.Add(runButton);
+            Name = "Form1";
+            Text = "Form1";
+            ResumeLayout(false);
         }
 
         #endregion
+
+        private Button runButton;
+        private ScottPlot.WinForms.FormsPlot resultsPlot;
     }
 }

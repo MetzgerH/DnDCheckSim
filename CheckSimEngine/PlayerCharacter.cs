@@ -3,7 +3,7 @@
     /// <summary>
     /// Enumerates the different playable classes in 5e.
     /// </summary>
-    internal enum PlayerClass
+    public enum PlayerClass
     {
         Barbarian,
         Bard,
@@ -23,7 +23,7 @@
     /// <summary>
     /// Enumerates different playable lineages (also known as races) in 5e.
     /// </summary>
-    internal enum Lineage
+    public enum Lineage
     {
         Dragonborn,
         Dwarf,
@@ -326,7 +326,7 @@
 
                     break;
                 case Lineage.Human:
-                    for (int i = 0; i < (int) Skill.Max; i++)
+                    for (int i = 0; i < (int) Ability.Max; i++)
                     {
                         this.IncreaseAbilityScore((Ability)i, 1);
                     }
@@ -1073,7 +1073,7 @@
         private void AddProficiencyOutOf(List<Skill> skillList)
         {
             List<Skill> skills = new List<Skill>(skillList);
-            foreach (Skill skill in skills)
+            foreach (Skill skill in skillList)
             {
                 if (this.skillProficiencies.Contains(skill))
                 {

@@ -10,7 +10,7 @@
     /// <summary>
     /// This enumerates the different abilities in 5e.
     /// </summary>
-    internal enum Ability
+    public enum Ability
     {
         Strength,
         Dexterity,
@@ -18,12 +18,13 @@
         Intelligence,
         Wisdom,
         Charisma,
+        Max,
     }
 
     /// <summary>
     /// This enumerates the different skills in 5e.
     /// </summary>
-    internal enum Skill
+    public enum Skill
     {
         Acrobatics,
         AnimalHandling,
@@ -49,7 +50,7 @@
     /// <summary>
     /// This enumerates the different tools in 5e, including artisans' tools and other tools.
     /// </summary>
-    internal enum Tool
+    public enum Tool
     {
         Alchemists,
         Brewers,
