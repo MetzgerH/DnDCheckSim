@@ -96,6 +96,7 @@
 
             this.modifiers.Enqueue(d20 => { d20.ApplyAdvantage(); }, ModifierPriority.Advantage);
             this.modifiers.Enqueue(this.ApplyProficiencies, ModifierPriority.AfterAdvantage);
+            this.modifiers.Enqueue(this.ApplyAbilityModifiers, ModifierPriority.AfterAdvantage);
 
             for (int i = 0; i < 6; i++)
             {
@@ -105,6 +106,8 @@
 
             this.level = level;
             this.ApplyClass(this.playerClass);
+
+            this.AllocateStandardArray();
 
             this.ApplyLineage(lineage);
         }
@@ -1113,6 +1116,11 @@
             this.abilityScores[ability] = Math.Min(prev + amount, this.abilityScoreMaximums[ability]);
         }
 
+        private int GetAbilityModifier(Ability ability)
+        {
+            return (this.abilityScores[ability] - 10) / 2;
+        }
+
         /// <summary>
         /// This is a feature that every class gets at certain levels (the levels aren't the same between classes), which increases 2 ability scores by 1, or 1 by 2.
         /// </summary>
@@ -1167,6 +1175,14 @@
                 {
                     d20Test.ApplyBonus(this.ProficiencyBonus);
                 }
+            }
+        }
+
+        private void ApplyAbilityModifiers(D20Test d20Test)
+        {
+            if (d20Test.RelevantAbility is not null)
+            {
+                d20Test.ApplyBonus(this.GetAbilityModifier((Ability)d20Test.RelevantAbility));
             }
         }
     }

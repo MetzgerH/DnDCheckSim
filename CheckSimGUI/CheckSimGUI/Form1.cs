@@ -1,4 +1,5 @@
 using ScottPlot;
+using ScottPlot.WinForms;
 using System.Runtime.Serialization;
 
 namespace CheckSimGUI
@@ -15,7 +16,7 @@ namespace CheckSimGUI
 
         private void runButton_Click(object sender, EventArgs e)
         {
-            Dictionary<int, double> data = engine.RunCheck(level: 12, relevantAbility: CheckSimEngine.Ability.Dexterity, relevantSkill: CheckSimEngine.Skill.SleightOfHand, relevantTool: CheckSimEngine.Tool.Thieves, classRestriction: CheckSimEngine.PlayerClass.Rogue);
+            Dictionary<int, double> data = engine.RunCheck(level: 20, relevantAbility: CheckSimEngine.Ability.Dexterity, relevantSkill: CheckSimEngine.Skill.SleightOfHand, relevantTool: CheckSimEngine.Tool.Thieves, classRestriction: CheckSimEngine.PlayerClass.Rogue);
 
             string output = String.Empty;
             foreach (int result in data.Keys)

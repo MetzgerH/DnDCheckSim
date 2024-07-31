@@ -34,7 +34,7 @@
             // 
             // runButton
             // 
-            runButton.Location = new Point(668, 391);
+            runButton.Location = new Point(648, 391);
             runButton.Name = "runButton";
             runButton.Size = new Size(75, 23);
             runButton.TabIndex = 0;
@@ -45,9 +45,9 @@
             // resultsPlot
             // 
             resultsPlot.DisplayScale = 1F;
-            resultsPlot.Location = new Point(35, 264);
+            resultsPlot.Location = new Point(12, 128);
             resultsPlot.Name = "resultsPlot";
-            resultsPlot.Size = new Size(591, 174);
+            resultsPlot.Size = new Size(589, 310);
             resultsPlot.TabIndex = 1;
             // 
             // Form1
