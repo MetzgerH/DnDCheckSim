@@ -105,7 +105,7 @@
             }
 
             this.level = level;
-            this.ApplyClass(this.playerClass);
+            this.ApplyClass(playerClass);
 
             this.AllocateStandardArray();
 
@@ -902,8 +902,6 @@
                     {
                         this.AbilityScoreImprovement();
                     }
-
-                    throw new NotImplementedException("Still missing subclasses");
                     break;
                 case PlayerClass.Sorcerer:
                     this.AddProficiencyOutOf(new List<Skill> { Skill.Arcana, Skill.Deception, Skill.Insight, Skill.Intimidation, Skill.Persuasion, Skill.Religion });
@@ -1054,7 +1052,7 @@
         private void AddProficiencyOutOf(List<Tool> toolList)
         {
             List<Tool> tools = new List<Tool>(toolList);
-            foreach (Tool tool in tools)
+            foreach (Tool tool in toolList)
             {
                 if (this.toolProficiencies.Contains(tool))
                 {
@@ -1105,8 +1103,11 @@
                 candidates.Remove(skill);
             }
 
-            Random randy = new Random();
-            this.skillExpertises.Add(candidates[randy.Next(candidates.Count)]);
+            if (candidates.Count > 0)
+            {
+                Random randy = new Random();
+                this.skillExpertises.Add(candidates[randy.Next(candidates.Count)]);
+            }
         }
 
         private void IncreaseAbilityScore(Ability ability, int amount)
