@@ -112,6 +112,14 @@
             this.ApplyLineage(lineage ?? string.Empty);
         }
 
+        private int ProficiencyBonus
+        {
+            get
+            {
+                return ((this.level - 1) / 4) + 2;
+            }
+        }
+
         /// <summary>
         /// Applies all modifiers, including proficiencies, advantage, disadvantage, special features, etc. to <paramref name="d20Test"/>.
         /// </summary>
@@ -128,14 +136,6 @@
             }
 
             this.modifiers = replacementQueue;
-        }
-
-        private int ProficiencyBonus
-        {
-            get
-            {
-                return ((this.level - 1) / 4) + 2;
-            }
         }
 
         /// <summary>
