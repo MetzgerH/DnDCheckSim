@@ -15,7 +15,7 @@
             this.config = new ConfigurationManager();
         }
 
-        public Dictionary<int,double> RunCheck(bool isSave = false, int level = 1, Ability? relevantAbility = null, Skill? relevantSkill = null, Tool? relevantTool = null, PlayerClass? classRestriction = null, Lineage? lineageRestriction = null)
+        public Dictionary<int,double> RunCheck(bool isSave = false, int level = 1, Ability? relevantAbility = null, Skill? relevantSkill = null, Tool? relevantTool = null, PlayerClass? classRestriction = null, string? lineageRestriction = null)
         {
             Dictionary<int,double> output = new Dictionary<int,double>();
 

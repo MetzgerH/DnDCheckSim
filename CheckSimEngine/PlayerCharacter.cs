@@ -82,7 +82,7 @@
         /// <param name="playerClass">
         /// The class of this player instance. Randomly chosen if null.
         /// </param>
-        public PlayerCharacter(ConfigurationManager config, int level, Lineage? lineage = null, PlayerClass? playerClass = null)
+        public PlayerCharacter(ConfigurationManager config, int level, string? lineage = null, PlayerClass? playerClass = null)
         {
             this.config = config;
             this.skillProficiencies = new List<Skill>();
@@ -109,7 +109,7 @@
 
             this.AllocateStandardArray();
 
-            this.ApplyLineage(lineage);
+            this.ApplyLineage(lineage ?? string.Empty);
         }
 
         /// <summary>
@@ -144,141 +144,160 @@
         /// <param name="lineage">
         /// The lineage to apply. Can be null, to select a random lineage.
         /// </param>
-        private void ApplyLineage(Lineage? lineage)
+        private void ApplyLineage(string lineage)
         {
-            Lineage lineageToApply;
+            string lineageToApply;
             Random randy = new Random();
 
-            if (lineage == null)
+            if (lineage == string.Empty)
             {
+                List<string> lineageOptions = new List<string>();
+                if (this.config.SourceBooks.Contains("Player's Handbook"))
+                {
+                    lineageOptions.Add("Dragonborn");
+                    lineageOptions.Add("Dwarf");
+                    lineageOptions.Add("Elf");
+                    lineageOptions.Add("Gnome");
+                    lineageOptions.Add("Half-Elf");
+                    lineageOptions.Add("Halfling");
+                    lineageOptions.Add("Half-Orc");
+                    lineageOptions.Add("Human");
+                    lineageOptions.Add("Tiefling");
+                }
+
+                if (lineageOptions.Count == 0)
+                {
+                    throw new Exception("No lineages in provided sources");
+                }
+
                 // Set lineageToApply to a random lineage
-                lineageToApply = (Lineage)randy.Next((int)Lineage.Max);
+                lineageToApply = lineageOptions[randy.Next(lineageOptions.Count)];
             }
             else
             {
-                lineageToApply = (Lineage)lineage;
+                lineageToApply = lineage;
             }
 
             // Grant proficiences and bonuses relevant to lineage.
-            switch (lineageToApply)
+            if (lineageToApply == "Dragonborn")
             {
-                case Lineage.Dragonborn:
-                    if (this.config.UseRacialASI)
-                    {
-                        this.IncreaseAbilityScore(Ability.Strength, 2);
+                if (this.config.UseRacialASI)
+                {
+                    this.IncreaseAbilityScore(Ability.Strength, 2);
 
-                        this.IncreaseAbilityScore(Ability.Charisma, 1);
+                    this.IncreaseAbilityScore(Ability.Charisma, 1);
+                }
+            }
+            else if (lineageToApply == "Dwarf")
+            {
+                // Assign random tool proficiency from short list.
+                List<Tool> toolList = new List<Tool>() { Tool.Smiths, Tool.Brewers, Tool.Masons };
+                this.AddProficiencyOutOf(toolList);
+
+                if (this.config.UseRacialASI)
+                {
+                    this.IncreaseAbilityScore(Ability.Constitution, 2);
+
+                    // Randomly choose subrace.
+                    switch (randy.Next(2))
+                    {
+                        // Hill Dwarf
+                        case 0:
+                            this.IncreaseAbilityScore(Ability.Wisdom, 1);
+                            break;
+
+                        // Mountain Dwarf
+                        case 1:
+                            this.IncreaseAbilityScore(Ability.Strength, 2);
+                            break;
                     }
+                }
+            }
+            else if (lineageToApply == "Elf")
+            {
+                // "Keen Senses": Perception proficiency
+                if (!this.skillProficiencies.Contains(Skill.Perception))
+                {
+                    this.skillProficiencies.Add(Skill.Perception);
+                }
 
-                    break;
-                case Lineage.Dwarf:
-                    // Assign random tool proficiency from short list.
-                    List<Tool> toolList = new List<Tool>() { Tool.Smiths, Tool.Brewers, Tool.Masons };
-                    this.AddProficiencyOutOf(toolList);
+                if (this.config.UseRacialASI)
+                {
+                    this.IncreaseAbilityScore(Ability.Dexterity, 2);
 
-                    if (this.config.UseRacialASI)
+                    // Randomly choose subrace.
+                    switch (randy.Next(3))
                     {
-                        this.IncreaseAbilityScore(Ability.Constitution, 2);
+                        // Eladrin
+                        case 0:
+                            this.IncreaseAbilityScore(Ability.Intelligence, 1);
+                            break;
 
-                        // Randomly choose subrace.
-                        switch (randy.Next(2))
-                        {
-                            // Hill Dwarf
-                            case 0:
-                                this.IncreaseAbilityScore(Ability.Wisdom, 1);
-                                break;
+                        // High Elf
+                        case 1:
+                            this.IncreaseAbilityScore(Ability.Intelligence, 1);
+                            break;
 
-                            // Mountain Dwarf
-                            case 1:
-                                this.IncreaseAbilityScore(Ability.Strength, 2);
-                                break;
-                        }
+                        // Wood Elf
+                        case 2:
+                            this.IncreaseAbilityScore(Ability.Wisdom, 1);
+                            break;
                     }
+                }
+            }
+            else if (lineageToApply == "Gnome")
+            {
+                if (this.config.UseRacialASI)
+                {
+                    this.IncreaseAbilityScore(Ability.Intelligence, 2);
 
-                    break;
-                case Lineage.Elf:
-                    // "Keen Senses": Perception proficiency
-                    if (!this.skillProficiencies.Contains(Skill.Perception))
+                    // Randomly choose subrace
+                    switch (randy.Next(2))
                     {
-                        this.skillProficiencies.Add(Skill.Perception);
+                        // Deep Gnome
+                        case 0:
+                            this.IncreaseAbilityScore(Ability.Dexterity, 1);
+                            break;
+
+                        // Rock Gnome
+                        case 1:
+                            this.IncreaseAbilityScore(Ability.Constitution, 1);
+                            break;
                     }
+                }
+            }
+            else if (lineageToApply == "Half-Elf")
+            {
+                if (this.config.UseRacialASI)
+                {
+                    this.IncreaseAbilityScore(Ability.Charisma, 2);
 
-                    if (this.config.UseRacialASI)
-                    {
-                        this.IncreaseAbilityScore(Ability.Dexterity, 2);
-
-                        // Randomly choose subrace.
-                        switch (randy.Next(3))
-                        {
-                            // Eladrin
-                            case 0:
-                                this.IncreaseAbilityScore(Ability.Intelligence, 1);
-                                break;
-
-                            // High Elf
-                            case 1:
-                                this.IncreaseAbilityScore(Ability.Intelligence, 1);
-                                break;
-
-                            // Wood Elf
-                            case 2:
-                                this.IncreaseAbilityScore(Ability.Wisdom, 1);
-                                break;
-                        }
-                    }
-
-                    break;
-                case Lineage.Gnome:
-                    if (this.config.UseRacialASI)
-                    {
-                        this.IncreaseAbilityScore(Ability.Intelligence, 2);
-
-                        // Randomly choose subrace
-                        switch (randy.Next(2))
-                        {
-                            // Deep Gnome
-                            case 0:
-                                this.IncreaseAbilityScore(Ability.Dexterity, 1);
-                                break;
-
-                            // Rock Gnome
-                            case 1:
-                                this.IncreaseAbilityScore(Ability.Constitution, 1);
-                                break;
-                        }
-                    }
-
-                    break;
-                case Lineage.HalfElf:
-                    if (this.config.UseRacialASI)
-                    {
-                        this.IncreaseAbilityScore(Ability.Charisma, 2);
-
-                        // Randomly choose two other ability scores to increase by 1
-                        List<Ability> abilityList = new List<Ability>()
+                    // Randomly choose two other ability scores to increase by 1
+                    List<Ability> abilityList = new List<Ability>()
                             { Ability.Constitution, Ability.Dexterity, Ability.Intelligence, Ability.Strength, Ability.Wisdom };
-                        Ability abilityToIncrease = abilityList[randy.Next(5)];
-                        this.IncreaseAbilityScore(abilityToIncrease, 1);
-                        abilityList.Remove(abilityToIncrease);
-                        abilityToIncrease = abilityList[randy.Next(4)];
-                        this.IncreaseAbilityScore(abilityToIncrease, 1);
-                    }
+                    Ability abilityToIncrease = abilityList[randy.Next(5)];
+                    this.IncreaseAbilityScore(abilityToIncrease, 1);
+                    abilityList.Remove(abilityToIncrease);
+                    abilityToIncrease = abilityList[randy.Next(4)];
+                    this.IncreaseAbilityScore(abilityToIncrease, 1);
+                }
 
-                    // Two random skills
-                    // Start by constructing list of all skills
-                    List<Skill> list = new List<Skill>();
-                    for (int i = 0; i < (int)Skill.Max; i++)
-                    {
-                        list.Add((Skill)i);
-                    }
+                // Two random skills
+                // Start by constructing list of all skills
+                List<Skill> list = new List<Skill>();
+                for (int i = 0; i < (int)Skill.Max; i++)
+                {
+                    list.Add((Skill)i);
+                }
 
-                    // Now choose two
-                    this.AddProficiencyOutOf(list);
-                    this.AddProficiencyOutOf(list);
-                    break;
-                case Lineage.Halfling:
-                    // Create the "Lucky" modifier, which rerolls the d20 when it rolls a 1. If a 1 is rolled on the reroll, it does not get rerolled again.
-                    Action<D20Test> lucky = d20 =>
+                // Now choose two
+                this.AddProficiencyOutOf(list);
+                this.AddProficiencyOutOf(list);
+            }
+            else if (lineageToApply == "Halfling")
+            {
+                // Create the "Lucky" modifier, which rerolls the d20 when it rolls a 1. If a 1 is rolled on the reroll, it does not get rerolled again.
+                Action<D20Test> lucky = d20 =>
                     {
                         Dictionary<int, double> oldOdds = new Dictionary<int, double>(d20.Odds);
 
@@ -292,57 +311,56 @@
                         }
                     };
 
-                    // Add the modifier to this player character.
-                    this.modifiers.Enqueue(lucky, ModifierPriority.Rerolls);
+                // Add the modifier to this player character.
+                this.modifiers.Enqueue(lucky, ModifierPriority.Rerolls);
 
-                    if (this.config.UseRacialASI)
+                if (this.config.UseRacialASI)
+                {
+                    this.IncreaseAbilityScore(Ability.Dexterity, 2);
+
+                    // Randomly choose subrace
+                    switch (randy.Next(2))
                     {
-                        this.IncreaseAbilityScore(Ability.Dexterity, 2);
+                        // Lightfoot
+                        case 0:
+                            this.IncreaseAbilityScore(Ability.Charisma, 1);
+                            break;
 
-                        // Randomly choose subrace
-                        switch (randy.Next(2))
-                        {
-                            // Lightfoot
-                            case 0:
-                                this.IncreaseAbilityScore(Ability.Charisma, 1);
-                                break;
-
-                            // Stout
-                            case 1:
-                                this.IncreaseAbilityScore(Ability.Constitution, 1);
-                                break;
-                        }
+                        // Stout
+                        case 1:
+                            this.IncreaseAbilityScore(Ability.Constitution, 1);
+                            break;
                     }
+                }
 
-                    break;
-                case Lineage.HalfOrc:
-                    if (!this.skillProficiencies.Contains(Skill.Intimidation))
-                    {
-                        this.skillProficiencies.Add(Skill.Intimidation);
-                    }
+            }
+            else if (lineageToApply == "Half-Orc")
+            {
+                if (!this.skillProficiencies.Contains(Skill.Intimidation))
+                {
+                    this.skillProficiencies.Add(Skill.Intimidation);
+                }
 
-                    if (this.config.UseRacialASI)
-                    {
-                        this.IncreaseAbilityScore(Ability.Strength, 2);
-                        this.IncreaseAbilityScore(Ability.Constitution, 2);
-                    }
-
-                    break;
-                case Lineage.Human:
-                    for (int i = 0; i < (int) Ability.Max; i++)
-                    {
-                        this.IncreaseAbilityScore((Ability)i, 1);
-                    }
-
-                    break;
-                case Lineage.Tiefling:
-                    if (this.config.UseRacialASI)
-                    {
-                        this.IncreaseAbilityScore(Ability.Charisma, 2);
-                        this.IncreaseAbilityScore(Ability.Intelligence, 2);
-                    }
-
-                    break;
+                if (this.config.UseRacialASI)
+                {
+                    this.IncreaseAbilityScore(Ability.Strength, 2);
+                    this.IncreaseAbilityScore(Ability.Constitution, 2);
+                }
+            }
+            else if (lineageToApply == "Human")
+            {
+                for (int i = 0; i < (int)Ability.Max; i++)
+                {
+                    this.IncreaseAbilityScore((Ability)i, 1);
+                }
+            }
+            else if (lineageToApply == "Tiefling")
+            {
+                if (this.config.UseRacialASI)
+                {
+                    this.IncreaseAbilityScore(Ability.Charisma, 2);
+                    this.IncreaseAbilityScore(Ability.Intelligence, 2);
+                }
             }
         }
 
