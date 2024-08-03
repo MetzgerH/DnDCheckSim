@@ -23,6 +23,27 @@
             get { return this.sourceBooks.AsReadOnly(); }
         }
 
+        public System.Collections.ObjectModel.ReadOnlyCollection<string> AvailableLineages
+        {
+            get
+            {
+                List<string> lineageOptions = new List<string>();
+                if (this.SourceBooks.Contains("Player's Handbook"))
+                {
+                    lineageOptions.Add("Dragonborn");
+                    lineageOptions.Add("Dwarf");
+                    lineageOptions.Add("Elf");
+                    lineageOptions.Add("Gnome");
+                    lineageOptions.Add("Half-Elf");
+                    lineageOptions.Add("Halfling");
+                    lineageOptions.Add("Half-Orc");
+                    lineageOptions.Add("Human");
+                    lineageOptions.Add("Tiefling");
+                }
+                return lineageOptions.AsReadOnly();
+            }
+        }
+
         /// <summary>
         /// Gets or sets an int representing how many playercharacters should be simulated per check.
         /// </summary>

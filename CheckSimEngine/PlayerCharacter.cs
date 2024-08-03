@@ -151,27 +151,13 @@
 
             if (lineage == string.Empty)
             {
-                List<string> lineageOptions = new List<string>();
-                if (this.config.SourceBooks.Contains("Player's Handbook"))
-                {
-                    lineageOptions.Add("Dragonborn");
-                    lineageOptions.Add("Dwarf");
-                    lineageOptions.Add("Elf");
-                    lineageOptions.Add("Gnome");
-                    lineageOptions.Add("Half-Elf");
-                    lineageOptions.Add("Halfling");
-                    lineageOptions.Add("Half-Orc");
-                    lineageOptions.Add("Human");
-                    lineageOptions.Add("Tiefling");
-                }
-
-                if (lineageOptions.Count == 0)
+                if (this.config.AvailableLineages.Count == 0)
                 {
                     throw new Exception("No lineages in provided sources");
                 }
 
                 // Set lineageToApply to a random lineage
-                lineageToApply = lineageOptions[randy.Next(lineageOptions.Count)];
+                lineageToApply = this.config.AvailableLineages[randy.Next(this.config.AvailableLineages.Count)];
             }
             else
             {
