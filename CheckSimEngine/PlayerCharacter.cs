@@ -1,26 +1,6 @@
 ﻿namespace CheckSimEngine
 {
     /// <summary>
-    /// Enumerates the different playable classes in 5e.
-    /// </summary>
-    public enum PlayerClass
-    {
-        Barbarian,
-        Bard,
-        Cleric,
-        Druid,
-        Fighter,
-        Monk,
-        Paladin,
-        Ranger,
-        Rogue,
-        Sorcerer,
-        Warlock,
-        Wizard,
-        Max,
-    }
-
-    /// <summary>
     /// Enumerates different playable lineages (also known as races) in 5e.
     /// </summary>
     public enum Lineage

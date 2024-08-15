@@ -179,17 +179,12 @@
         /// </param>
         public void ApplyBonus(int bonus)
         {
-            List<int> orderedRolls = this.odds.Keys.ToList();
+            Dictionary<int, double> oldOdds = new Dictionary<int, double>(this.odds);
+            this.odds = new Dictionary<int, double>();
 
-            // If a bonus is positive, we must iterate highest to lowest, to avoid double-boosting.
-            if (bonus > 0)
+            foreach (int roll in oldOdds.Keys)
             {
-                orderedRolls.Reverse();
-            }
-
-            foreach (int roll in orderedRolls)
-            {
-                this.odds[roll + bonus] = this.odds[roll];
+                this.odds[roll + bonus] = oldOdds[roll];
             }
         }
 

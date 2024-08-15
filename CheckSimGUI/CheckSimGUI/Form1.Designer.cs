@@ -30,6 +30,8 @@
         {
             runButton = new Button();
             resultsPlot = new ScottPlot.WinForms.FormsPlot();
+            ClassChoiceBox = new ComboBox();
+            ClassLabel = new TextBox();
             SuspendLayout();
             // 
             // runButton
@@ -50,21 +52,43 @@
             resultsPlot.Size = new Size(589, 310);
             resultsPlot.TabIndex = 1;
             // 
+            // ClassChoiceBox
+            // 
+            ClassChoiceBox.FormattingEnabled = true;
+            ClassChoiceBox.Location = new Point(607, 352);
+            ClassChoiceBox.Name = "ClassChoiceBox";
+            ClassChoiceBox.Size = new Size(121, 23);
+            ClassChoiceBox.TabIndex = 2;
+            // 
+            // ClassLabel
+            // 
+            ClassLabel.Location = new Point(607, 323);
+            ClassLabel.Name = "ClassLabel";
+            ClassLabel.ReadOnly = true;
+            ClassLabel.Size = new Size(100, 23);
+            ClassLabel.TabIndex = 3;
+            ClassLabel.Text = "Class:";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(ClassLabel);
+            Controls.Add(ClassChoiceBox);
             Controls.Add(resultsPlot);
             Controls.Add(runButton);
             Name = "Form1";
             Text = "Form1";
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
 
         private Button runButton;
         private ScottPlot.WinForms.FormsPlot resultsPlot;
+        private ComboBox ClassChoiceBox;
+        private TextBox ClassLabel;
     }
 }
