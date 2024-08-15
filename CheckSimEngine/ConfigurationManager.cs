@@ -16,13 +16,16 @@
         }
 
         /// <summary>
-        /// Gets a readonly list of source books.
+        /// Gets a readonly list of allowed source books.
         /// </summary>
         public System.Collections.ObjectModel.ReadOnlyCollection<string> SourceBooks
         {
             get { return this.sourceBooks.AsReadOnly(); }
         }
 
+        /// <summary>
+        /// Gets a readonly list of lineages contained in the allowed source books.
+        /// </summary>
         public System.Collections.ObjectModel.ReadOnlyCollection<string> AvailableLineages
         {
             get
