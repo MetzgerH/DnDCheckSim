@@ -32,6 +32,8 @@
             resultsPlot = new ScottPlot.WinForms.FormsPlot();
             ClassChoiceBox = new ComboBox();
             ClassLabel = new TextBox();
+            LineageLabel = new TextBox();
+            LineageChoiceBox = new ComboBox();
             SuspendLayout();
             // 
             // runButton
@@ -69,11 +71,30 @@
             ClassLabel.TabIndex = 3;
             ClassLabel.Text = "Class:";
             // 
+            // LineageLabel
+            // 
+            LineageLabel.Location = new Point(607, 265);
+            LineageLabel.Name = "LineageLabel";
+            LineageLabel.ReadOnly = true;
+            LineageLabel.Size = new Size(100, 23);
+            LineageLabel.TabIndex = 5;
+            LineageLabel.Text = "Race:";
+            // 
+            // LineageChoiceBox
+            // 
+            LineageChoiceBox.FormattingEnabled = true;
+            LineageChoiceBox.Location = new Point(607, 294);
+            LineageChoiceBox.Name = "LineageChoiceBox";
+            LineageChoiceBox.Size = new Size(121, 23);
+            LineageChoiceBox.TabIndex = 4;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(LineageLabel);
+            Controls.Add(LineageChoiceBox);
             Controls.Add(ClassLabel);
             Controls.Add(ClassChoiceBox);
             Controls.Add(resultsPlot);
@@ -90,5 +111,7 @@
         private ScottPlot.WinForms.FormsPlot resultsPlot;
         private ComboBox ClassChoiceBox;
         private TextBox ClassLabel;
+        private TextBox LineageLabel;
+        private ComboBox LineageChoiceBox;
     }
 }

@@ -17,17 +17,26 @@ namespace CheckSimGUI
             {
                 this.ClassChoiceBox.Items.Add(PlayerClassHelper.ToString((PlayerClass)i));
             }
+            foreach (string lineage in this.engine.Config.AvailableLineages)
+            {
+                this.LineageChoiceBox.Items.Add(lineage);
+            }
         }
 
         private void runButton_Click(object sender, EventArgs e)
         {
             CheckSimEngine.PlayerClass? chosenClass = null;
+            string? chosenLineage = null;
             if (this.ClassChoiceBox.SelectedIndex != -1)
             {
                 chosenClass = CheckSimEngine.PlayerClassHelper.FromString(this.ClassChoiceBox.Items[this.ClassChoiceBox.SelectedIndex].ToString());
             }
+            if (this.LineageChoiceBox.SelectedIndex != -1)
+            {
+                chosenLineage = this.LineageChoiceBox.Items[this.LineageChoiceBox.SelectedIndex].ToString();
+            }
 
-            Dictionary<int, double> data = engine.RunCheck(level: 20, relevantAbility: CheckSimEngine.Ability.Dexterity, relevantSkill: CheckSimEngine.Skill.SleightOfHand, relevantTool: CheckSimEngine.Tool.Thieves, classRestriction: chosenClass);
+            Dictionary<int, double> data = engine.RunCheck(level: 20, relevantAbility: CheckSimEngine.Ability.Strength, relevantSkill: CheckSimEngine.Skill.Athletics, relevantTool: CheckSimEngine.Tool.Smiths, classRestriction: chosenClass, lineageRestriction: chosenLineage);
 
             string output = String.Empty;
             foreach (int result in data.Keys)

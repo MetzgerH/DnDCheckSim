@@ -94,7 +94,7 @@
         private Ability? relevantAbility;
         private Dictionary<int, double> odds;
         private bool hasAdvantage = false;
-        private bool hasDisadvantage = true;
+        private bool hasDisadvantage = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="D20Test"/> class.
@@ -206,7 +206,7 @@
                     }
                 }
             }
-            else if (!this.HasDisadvantage && this.HasDisadvantage)
+            else if (!this.HasAdvantage && this.HasDisadvantage)
             {
                 Dictionary<int, double> oldOdds = new Dictionary<int, double>(this.odds);
                 this.odds = new Dictionary<int, double>();

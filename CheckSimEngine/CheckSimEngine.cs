@@ -15,6 +15,14 @@
             this.config = new ConfigurationManager();
         }
 
+        /// <summary>
+        /// Gets the configuration manager for this engine.
+        /// </summary>
+        public ConfigurationManager Config
+        {
+            get { return this.config; }
+        }
+
         public Dictionary<int,double> RunCheck(bool isSave = false, int level = 1, Ability? relevantAbility = null, Skill? relevantSkill = null, Tool? relevantTool = null, PlayerClass? classRestriction = null, string? lineageRestriction = null)
         {
             Dictionary<int,double> output = new Dictionary<int,double>();
